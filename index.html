@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shipping Azul • Plano Diário</title>
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --surface:#ffffff;
+    --surface-2:#f8fafc;
+    --text:#172033;
+    --muted:#657085;
+    --line:#e3e8f0;
+    --primary:#1266f1;
+    --primary-2:#0c4fc4;
+    --primary-soft:#eaf2ff;
+    --green:#159a62;
+    --green-soft:#e8f8f0;
+    --red:#d64545;
+    --red-soft:#ffeded;
+    --amber:#c87a0a;
+    --amber-soft:#fff4df;
+    --purple:#7656d6;
+    --purple-soft:#f0ecff;
+    --cyan:#087ea4;
+    --cyan-soft:#e7f7fc;
+    --shadow:0 8px 28px rgba(27,45,78,.08);
+    --radius:16px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+  body{min-width:1100px}
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+
+  .app{max-width:1860px;margin:0 auto;padding:18px 22px 28px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(145deg,#1273ff,#0647ac);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 8px 18px rgba(18,102,241,.28)}
+  .brand h1{font-size:21px;line-height:1.1;margin:0}
+  .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .top-actions{display:flex;align-items:center;gap:8px}
+
+  .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:9px 12px;font-weight:700;font-size:13px;transition:.15s}
+  .btn:hover{transform:translateY(-1px);border-color:#cfd7e4;box-shadow:0 4px 12px rgba(31,47,75,.07)}
+  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-2)}
+  .btn.danger{color:var(--red);border-color:#f0caca;background:#fff}
+  .btn.soft{background:var(--primary-soft);border-color:#d7e5ff;color:var(--primary-2)}
+  .btn.icon{padding:7px 9px;min-width:34px}
+  .btn.small{padding:6px 9px;font-size:12px}
+
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;box-shadow:0 3px 12px rgba(32,52,82,.04);display:flex;align-items:center;gap:12px}
+  .kpi-icon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;font-weight:800;background:var(--primary-soft);color:var(--primary)}
+  .kpi:nth-child(2) .kpi-icon{background:var(--green-soft);color:var(--green)}
+  .kpi:nth-child(3) .kpi-icon{background:var(--red-soft);color:var(--red)}
+  .kpi:nth-child(4) .kpi-icon{background:var(--purple-soft);color:var(--purple)}
+  .kpi:nth-child(5) .kpi-icon{background:var(--cyan-soft);color:var(--cyan)}
+  .kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800}
+  .kpi-value{font-size:23px;line-height:1.05;font-weight:900;margin-top:2px}
+
+  .layout{display:grid;grid-template-columns:minmax(500px,1.45fr) minmax(340px,.92fr) minmax(340px,.9fr);gap:14px;align-items:start}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#fbfcfe)}
+  .panel-title{display:flex;align-items:center;gap:9px}
+  .panel-title h2{font-size:14px;letter-spacing:.02em;margin:0}
+  .panel-title .count{font-size:11px;background:#eef2f7;color:#586477;padding:3px 7px;border-radius:99px;font-weight:800}
+  .panel-body{padding:14px}
+
+  .toolbar{display:grid;grid-template-columns:minmax(180px,1fr) 130px 150px;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .field,.select{width:100%;height:36px;border:1px solid #d8dee9;border-radius:9px;background:#fff;padding:0 10px;color:var(--text);outline:none;transition:.15s}
+  .field:focus,.select:focus{border-color:#79a9ff;box-shadow:0 0 0 3px rgba(18,102,241,.10)}
+  .search-wrap{position:relative}
+  .search-wrap .field{padding-left:33px}
+  .search-wrap:before{content:'⌕';position:absolute;left:11px;top:7px;color:#8893a6;font-size:18px}
+
+  .employee-scroll{max-height:510px;overflow:auto}
+  table{border-collapse:collapse;width:100%}
+  th{position:sticky;top:0;background:#f7f9fc;color:#626e82;font-size:10px;text-transform:uppercase;letter-spacing:.05em;text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);z-index:2}
+  td{padding:8px 10px;border-bottom:1px solid #edf0f5;vertical-align:middle;font-size:12px}
+  tr:last-child td{border-bottom:none}
+  tbody tr{transition:.12s}
+  tbody tr:hover{background:#fafcff}
+  .person{display:flex;align-items:center;gap:9px;min-width:0}
+  .avatar{width:30px;height:30px;flex:0 0 30px;border-radius:9px;background:#eaf1fb;color:#35608f;display:grid;place-items:center;font-size:11px;font-weight:900}
+  .person-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+  .person-meta{color:var(--muted);font-size:10px;margin-top:2px;white-space:nowrap}
+  .inline-select{height:31px;border:1px solid #dce2eb;border-radius:8px;background:#fff;padding:0 7px;font-size:11px;max-width:145px}
+  .inline-select.status{font-weight:800}
+  .status-empty{color:#788398}
+  .status-present{color:var(--green);background:var(--green-soft);border-color:#cdeede}
+  .status-absent{color:var(--red);background:var(--red-soft);border-color:#f4d0d0}
+  .status-synergy{color:var(--purple);background:var(--purple-soft);border-color:#ddd4ff}
+  .action-row{display:flex;gap:4px;justify-content:flex-end}
+  .mini-action{border:0;background:transparent;border-radius:7px;width:28px;height:28px;color:#6e798b;font-size:14px}
+  .mini-action:hover{background:#eef3f9;color:var(--text)}
+  .mini-action.delete:hover{background:var(--red-soft);color:var(--red)}
+
+  .plan-stack{display:flex;flex-direction:column;gap:9px}
+  .planning-row{display:grid;grid-template-columns:minmax(90px,1fr) 64px 58px 66px;gap:7px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+  .planning-row.shortage{border-color:#f1c3c3;background:#fffafa}
+  .planning-row.complete{border-color:#c9eadb;background:#fbfefc}
+  .planning-row.excess{border-color:#f0d5aa;background:#fffcf7}
+  .planning-fn{font-size:12px;font-weight:900;min-width:0}
+  .planning-state{grid-column:1/-1;font-size:11px;font-weight:800;margin-top:1px;display:flex;align-items:center;gap:5px}
+  .planning-state.shortage{color:var(--red)}
+  .planning-state.complete{color:var(--green)}
+  .planning-state.excess{color:var(--amber)}
+  .num-label{font-size:9px;text-transform:uppercase;color:#8a94a6;font-weight:800;margin-bottom:3px}
+  .num-box{height:32px;width:100%;border:1px solid #dae0e9;border-radius:8px;text-align:center;font-weight:900;background:#fff}
+  .num-static{height:32px;border:1px solid #e2e6ed;border-radius:8px;display:grid;place-items:center;font-weight:900;background:#f8fafc}
+  .diff-pos{color:var(--amber)}.diff-zero{color:var(--green)}.diff-neg{color:var(--red)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted);padding-top:6px}
+  .legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;background:#ccc}.dot.red{background:var(--red)}.dot.green{background:var(--green)}.dot.amber{background:var(--amber)}
+
+  .day-plan{display:flex;flex-direction:column;gap:10px;max-height:610px;overflow:auto;padding-right:2px}
+  .plan-group{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  .plan-group-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 11px;background:#f7f9fc;border-bottom:1px solid var(--line)}
+  .plan-group-head strong{font-size:12px}
+  .plan-group-head span{font-size:10px;color:var(--muted);font-weight:800}
+  .plan-names{padding:7px 9px}
+  .plan-person{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 4px;border-bottom:1px dashed #e8ecf2;font-size:12px}
+  .plan-person:last-child{border-bottom:0}
+  .plan-person-name{font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tag{font-size:9px;padding:3px 6px;border-radius:99px;font-weight:900;white-space:nowrap}
+  .tag.team{background:var(--primary-soft);color:var(--primary)}
+  .tag.synergy{background:var(--purple-soft);color:var(--purple)}
+  .empty{padding:34px 16px;text-align:center;color:var(--muted)}
+  .empty .big{font-size:30px;margin-bottom:7px;opacity:.7}.empty strong{display:block;color:#4e5a6e;margin-bottom:4px}
+
+  .synergy-section{margin-top:14px}
+  .synergy-grid{display:grid;grid-template-columns:1fr;gap:10px}
+  .synergy-table-wrap{overflow:auto;max-height:280px}
+  .origin{font-size:10px;color:var(--muted)}
+  .synergy-row{background:linear-gradient(90deg,rgba(118,86,214,.045),transparent 38%)}
+  .synergy-empty{padding:22px;text-align:center;color:var(--muted);font-size:12px}
+
+  dialog{border:0;padding:0;border-radius:16px;box-shadow:0 24px 80px rgba(20,31,50,.28);width:min(520px,calc(100vw - 40px));color:var(--text)}
+  dialog::backdrop{background:rgba(17,29,49,.42);backdrop-filter:blur(2px)}
+  .modal-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .modal-head h3{margin:0;font-size:16px}
+  .modal-close{border:0;background:#f2f5f9;width:30px;height:30px;border-radius:8px;font-size:18px;color:#6b7688}
+  .modal-body{padding:17px 18px;max-height:70vh;overflow:auto}
+  .modal-foot{padding:13px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;background:#fbfcfe}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-row{display:flex;flex-direction:column;gap:5px}
+  .form-row.full{grid-column:1/-1}
+  .form-row label{font-size:10px;text-transform:uppercase;color:#6f7a8e;font-weight:900;letter-spacing:.05em}
+  .modal-input{height:38px;border:1px solid #d7dde7;border-radius:9px;padding:0 10px;outline:none}
+  .modal-input:focus{border-color:#79a9ff;box-shadow:0 0 0 3px rgba(18,102,241,.09)}
+  .functions-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .function-edit-row{display:grid;grid-template-columns:1fr auto auto;gap:7px;align-items:center}
+  .add-function-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding-top:13px;border-top:1px solid var(--line)}
+  .hint{font-size:11px;color:var(--muted);line-height:1.45;margin:0 0 12px}
+
+  .toast{position:fixed;right:20px;bottom:20px;background:#172033;color:#fff;border-radius:10px;padding:10px 13px;font-size:12px;font-weight:700;opacity:0;transform:translateY(12px);pointer-events:none;transition:.22s;z-index:20;box-shadow:0 12px 34px rgba(0,0,0,.18)}
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  @media(max-width:1450px){
+    .app{padding:14px}
+    .layout{grid-template-columns:minmax(480px,1.3fr) minmax(315px,.84fr) minmax(315px,.84fr);gap:10px}
+    .person-name{max-width:150px}
+    .kpi{padding:11px 12px}.kpi-value{font-size:21px}
+    td{padding:7px 7px}.toolbar{grid-template-columns:1fr 120px 135px}
+  }
+
+
+  /* ===== Alternância entre módulos ===== */
+  .module-switcher-shell{position:sticky;top:0;z-index:60;background:#101823;border-bottom:1px solid #243244;box-shadow:0 4px 18px rgba(5,15,30,.18)}
+  .module-switcher{max-width:1860px;margin:auto;padding:8px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .module-switcher-brand{color:#dce7f5;font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+  .module-tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .module-tab{border:1px solid #34465c;background:#1b2735;color:#cbd7e5;border-radius:9px;padding:8px 12px;font-weight:800;font-size:12px;cursor:pointer;transition:.15s}
+  .module-tab:hover{background:#253548;color:#fff}.module-tab.active{background:#fff;color:#152131;border-color:#fff}
+  .module-view{display:none}.module-view.active{display:block}
+
+  /* ===== Módulo: Controle de Carregamento ===== */
+  #loadingModule{--lc-accent:#ee4d2d;--lc-dark:#202a33;--lc-ok:#16a34a;--lc-warn:#d97706;--lc-info:#2563eb;--lc-danger:#dc2626;padding-top:18px}
+  #loadingModule .lc-header{background:linear-gradient(135deg,#202a33,#111820);color:#fff;border-radius:16px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:18px;box-shadow:var(--shadow);margin-bottom:14px}
+  #loadingModule .lc-brand h1{margin:0;font-size:22px}#loadingModule .lc-brand p{margin:5px 0 0;color:#c9d1d8;font-size:12px}
+  #loadingModule .lc-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  #loadingModule .lc-btn{border:1px solid #dfe4e8;border-radius:9px;padding:9px 12px;font-weight:800;cursor:pointer;background:#fff;color:#202a33;font-size:12px;transition:.15s}
+  #loadingModule .lc-btn:hover{transform:translateY(-1px);filter:brightness(.98)}#loadingModule .lc-btn.primary{background:var(--lc-accent);border-color:var(--lc-accent);color:#fff}#loadingModule .lc-btn.dark{background:#37434d;border-color:#46545f;color:#fff}#loadingModule .lc-btn.soft{background:#edf4ff;border-color:#cfdef8;color:#1d4ed8}#loadingModule .lc-btn.danger{background:#fee2e2;border-color:#fecaca;color:#991b1b}
+  #loadingModule .lc-grid{display:grid;gap:12px}#loadingModule .lc-cards{grid-template-columns:repeat(6,minmax(130px,1fr));margin-bottom:14px}
+  #loadingModule .lc-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 15px;box-shadow:0 3px 12px rgba(32,52,82,.04)}
+  #loadingModule .lc-metric{font-size:24px;font-weight:900;margin-top:5px}#loadingModule .lc-label{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+  #loadingModule .lc-layout{grid-template-columns:430px minmax(0,1fr);align-items:start}
+  #loadingModule .lc-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}#loadingModule .lc-panel h2{font-size:16px;margin:0 0 13px}
+  #loadingModule .lc-section{border-top:1px solid var(--line);padding-top:13px;margin-top:14px}#loadingModule .lc-section.first{border-top:0;padding-top:0;margin-top:0}#loadingModule .lc-section h3{font-size:11px;margin:0 0 9px;text-transform:uppercase;letter-spacing:.06em;color:#4b5563}
+  #loadingModule .lc-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}#loadingModule .lc-full{grid-column:1/-1}#loadingModule label{font-size:11px;font-weight:800;color:#4b5563;display:block;margin-bottom:4px}
+  #loadingModule input,#loadingModule select,#loadingModule textarea{width:100%;padding:8px 9px;border:1px solid #cfd6dc;border-radius:8px;background:#fff;font:inherit;font-size:12px;color:#17212b;outline:none}#loadingModule input:focus,#loadingModule select:focus,#loadingModule textarea:focus{border-color:#79a9ff;box-shadow:0 0 0 3px rgba(18,102,241,.10)}#loadingModule textarea{min-height:66px;resize:vertical}
+  #loadingModule .lc-timeline{display:grid;grid-template-columns:1fr 1fr;gap:8px}#loadingModule .lc-timebox{background:#f8fafb;border:1px solid var(--line);padding:8px;border-radius:9px}
+  #loadingModule .lc-composition-row{display:grid;grid-template-columns:1fr 92px 82px 32px;gap:6px;align-items:end;margin-bottom:7px}#loadingModule .lc-pct{background:#f1f5f9;border-radius:8px;padding:8px;text-align:center;font-weight:900;font-size:11px}#loadingModule .lc-remove{border:0;background:#fee2e2;color:#991b1b;border-radius:8px;height:34px;cursor:pointer;font-weight:900}
+  #loadingModule .lc-totals{display:flex;justify-content:space-between;background:#f8fafb;border:1px solid var(--line);padding:9px;border-radius:9px;font-size:11px;margin-top:8px}
+  #loadingModule .lc-team-row{display:flex;gap:7px;align-items:end}#loadingModule .lc-team-row>div{flex:1}#loadingModule .lc-help{font-size:10px;color:var(--muted);line-height:1.45;margin:7px 0 0}
+  #loadingModule .lc-form-actions{display:flex;gap:7px;margin-top:15px;position:sticky;bottom:0;background:#fff;padding-top:9px;border-top:1px solid #edf0f5}
+  #loadingModule .lc-history-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}#loadingModule .lc-history-head h2{margin:0}
+  #loadingModule .lc-filters{display:grid;grid-template-columns:minmax(180px,1.2fr) 145px 150px minmax(120px,.8fr) auto;gap:7px;margin-bottom:10px}
+  #loadingModule .lc-tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:670px}#loadingModule table{width:100%;border-collapse:collapse;min-width:1260px;background:#fff}#loadingModule th,#loadingModule td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:11px;white-space:nowrap}#loadingModule th{background:#f6f8fa;color:#4b5563;position:sticky;top:0;z-index:2}#loadingModule tr:hover td{background:#fafafa}
+  #loadingModule .lc-badge{display:inline-flex;padding:4px 7px;border-radius:99px;font-size:10px;font-weight:900}#loadingModule .lc-aguardando{background:#fff7ed;color:#9a3412}#loadingModule .lc-carregando{background:#dbeafe;color:#1d4ed8}#loadingModule .lc-finalizado{background:#dcfce7;color:#166534}#loadingModule .lc-atrasado{background:#fee2e2;color:#991b1b}
+  #loadingModule .lc-smallbtn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 7px;cursor:pointer;font-weight:800;font-size:10px}#loadingModule .lc-smallbtn.edit{color:#1d4ed8}#loadingModule .lc-smallbtn.del{color:#991b1b}
+  #loadingModule .lc-empty{text-align:center;color:var(--muted);padding:34px}
+  @media(max-width:1450px){#loadingModule .lc-layout{grid-template-columns:395px minmax(0,1fr)}#loadingModule .lc-cards{grid-template-columns:repeat(3,1fr)}#loadingModule .lc-filters{grid-template-columns:1fr 125px 130px 120px auto}}
+
+
+
+  /* ===== Histórico Diário ===== */
+  #historyModule,#productivityModule{padding-top:18px}
+  .submodule-header{background:linear-gradient(135deg,#172235,#0e1724);color:#fff;border-radius:16px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:18px;box-shadow:var(--shadow);margin-bottom:14px}
+  .submodule-header h1{margin:0;font-size:22px}.submodule-header p{margin:5px 0 0;color:#c7d2e2;font-size:12px}.submodule-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .submodule-actions input,.submodule-actions select{height:36px;border:1px solid #415168;border-radius:9px;background:#fff;padding:0 10px;color:#172033;font-size:12px}
+  .history-kpis,.prod-kpis{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+  .mini-kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px;box-shadow:0 3px 12px rgba(32,52,82,.04)}
+  .mini-kpi .mk-label{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.05em}.mini-kpi .mk-value{font-size:22px;font-weight:900;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-kpi .mk-sub{font-size:10px;color:var(--muted);margin-top:3px}
+  .history-layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:14px;align-items:start}.history-list{max-height:680px;overflow:auto;padding:8px}.history-day{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px;margin-bottom:7px;cursor:pointer;transition:.15s}.history-day:hover{border-color:#b9c8dc;background:#fbfdff}.history-day.active{border-color:#80adfa;background:var(--primary-soft)}.history-day strong{display:block;font-size:13px}.history-day span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.history-day-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}.history-day-stat{background:#f7f9fc;border-radius:7px;padding:5px;text-align:center;font-size:9px;color:#667085}.history-day-stat b{display:block;color:#263247;font-size:12px}
+  .history-details{padding:14px}.history-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.history-box{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}.history-box h3{margin:0;padding:10px 12px;background:#f7f9fc;border-bottom:1px solid var(--line);font-size:12px}.history-box-body{padding:10px;max-height:310px;overflow:auto}.history-table{width:100%;border-collapse:collapse}.history-table th,.history-table td{padding:7px 8px;font-size:10px;border-bottom:1px solid #edf0f5;white-space:nowrap}.history-table th{position:sticky;top:0;background:#f8fafc;z-index:1}.history-status{display:inline-flex;border-radius:99px;padding:3px 6px;font-size:9px;font-weight:900}.history-status.presente{background:var(--green-soft);color:var(--green)}.history-status.ausente{background:var(--red-soft);color:var(--red)}.history-status.sem-status{background:#eef2f7;color:#657085}
+
+  /* ===== Produtividade ===== */
+  .prod-layout{display:grid;grid-template-columns:360px 330px minmax(0,1fr);gap:14px;align-items:start;margin-bottom:14px}.prod-panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.prod-panel-head{padding:13px 14px;border-bottom:1px solid var(--line);background:#fbfcfe;display:flex;align-items:center;justify-content:space-between;gap:8px}.prod-panel-head h2{margin:0;font-size:14px}.prod-panel-body{padding:14px}.prod-form{display:grid;grid-template-columns:1fr 1fr;gap:9px}.prod-form .full{grid-column:1/-1}.prod-form label{font-size:10px;font-weight:900;color:#566176;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}.prod-form input,.prod-form select,.prod-form textarea{width:100%;border:1px solid #d8dee9;border-radius:9px;padding:9px;background:#fff;font:inherit;font-size:12px;outline:none}.prod-form textarea{resize:vertical;min-height:64px}.prod-form input:focus,.prod-form select:focus,.prod-form textarea:focus{border-color:#79a9ff;box-shadow:0 0 0 3px rgba(18,102,241,.10)}
+  .goal-list{display:flex;flex-direction:column;gap:7px;max-height:480px;overflow:auto}.goal-row{display:grid;grid-template-columns:minmax(100px,1fr) 90px 42px;gap:7px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff}.goal-row strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.goal-row input{height:31px;border:1px solid #d8dee9;border-radius:8px;text-align:center;font-weight:900;width:100%}.goal-row span{font-size:9px;color:var(--muted);font-weight:800}.prod-note{background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:9px 10px;color:#657085;font-size:10px;line-height:1.45;margin-top:10px}
+  .rank-list{display:flex;flex-direction:column;gap:7px;max-height:520px;overflow:auto}.rank-card{display:grid;grid-template-columns:36px minmax(120px,1fr) 90px 80px 78px;gap:8px;align-items:center;border:1px solid var(--line);border-radius:11px;padding:8px 10px}.rank-card.top1{border-color:#f0d58f;background:#fffdf5}.rank-pos{width:30px;height:30px;border-radius:9px;background:#f0f3f8;display:grid;place-items:center;font-weight:900;font-size:11px}.rank-card.top1 .rank-pos{background:#fff0b8;color:#8a5a00}.rank-name{font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rank-meta{font-size:9px;color:var(--muted);margin-top:2px}.rank-num{text-align:right}.rank-num b{display:block;font-size:12px}.rank-num span{font-size:9px;color:var(--muted)}
+  .prod-history-wrap{overflow:auto;max-height:430px}.prod-history-table{min-width:980px}.prod-history-table th,.prod-history-table td{font-size:10px;padding:8px}.score-pill{display:inline-flex;padding:4px 7px;border-radius:99px;background:var(--primary-soft);color:var(--primary-2);font-weight:900;font-size:10px}.score-pill.good{background:var(--green-soft);color:var(--green)}.score-pill.warn{background:var(--amber-soft);color:var(--amber)}
+  .metric-help{font-size:10px;color:var(--muted);line-height:1.4}.empty-inline{padding:28px 12px;text-align:center;color:var(--muted);font-size:11px}
+  @media(max-width:1450px){.history-kpis,.prod-kpis{grid-template-columns:repeat(3,1fr)}.prod-layout{grid-template-columns:330px 300px minmax(0,1fr)}.history-layout{grid-template-columns:290px minmax(0,1fr)}}
+
+  /* ===== QR Codes ===== */
+  #qrModule{padding-top:18px}
+  .qr-summary{display:grid;grid-template-columns:repeat(3,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+  .qr-toolbar{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .qr-search-wrap{flex:1;max-width:520px}.qr-search-wrap input{width:100%;height:38px;border:1px solid #d8dee9;border-radius:9px;padding:0 12px;font:inherit;font-size:12px;outline:none}.qr-search-wrap input:focus{border-color:#79a9ff;box-shadow:0 0 0 3px rgba(18,102,241,.10)}
+  .qr-mode{display:flex;align-items:center;gap:6px;background:#f2f5f9;border:1px solid var(--line);border-radius:10px;padding:4px}.qr-mode-label{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase;padding:0 5px}.qr-mode-btn{border:0;background:transparent;color:#596579;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:900;cursor:pointer}.qr-mode-btn.active{background:#172235;color:#fff;box-shadow:0 2px 8px rgba(20,35,55,.18)}
+  .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .qr-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px;box-shadow:0 3px 12px rgba(32,52,82,.05);min-width:0}.qr-card:hover{border-color:#b9c8dc;box-shadow:0 7px 22px rgba(32,52,82,.08)}
+  .qr-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.qr-person{display:flex;align-items:center;gap:8px;min-width:0}.qr-person .avatar{flex:0 0 auto}.qr-person-text{min-width:0}.qr-person-name{font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qr-person-meta{font-size:9px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qr-kind{display:inline-flex;align-items:center;justify-content:center;min-width:38px;padding:5px 7px;border-radius:8px;background:var(--primary-soft);color:var(--primary-2);font-size:10px;font-weight:900}
+  .qr-code-box{display:grid;place-items:center;background:#fff;border:1px solid #edf0f4;border-radius:12px;padding:8px;min-height:180px}.qr-code-box canvas{display:block;width:174px;height:174px;max-width:100%;image-rendering:pixelated}.qr-missing{height:174px;width:174px;max-width:100%;display:grid;place-items:center;text-align:center;background:#f8fafc;border:1px dashed #ccd5e1;border-radius:9px;color:var(--muted);font-size:10px;line-height:1.45;padding:16px}
+  .qr-value-row{display:flex;align-items:center;gap:7px;margin-top:9px}.qr-value{flex:1;min-width:0;background:#f6f8fb;border:1px solid var(--line);border-radius:9px;padding:8px 9px;font-family:Consolas,monospace;font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qr-copy{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 8px;cursor:pointer;font-size:10px;font-weight:900;color:#425169}.qr-copy:hover{background:#f4f7fb}.qr-copy:disabled{opacity:.45;cursor:not-allowed}
+  .qr-empty{grid-column:1/-1;background:#fff;border:1px solid var(--line);border-radius:15px;padding:45px;text-align:center;color:var(--muted);font-size:12px}
+  @media(max-width:700px){.qr-toolbar{align-items:stretch;flex-direction:column}.qr-search-wrap{max-width:none}.qr-mode{justify-content:center}.qr-summary{grid-template-columns:1fr}.qr-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* ===== Cliente Supabase (fonte única para Carregamento, Histórico e Produtividade) ===== */
+  window.sbClient = supabase.createClient(
+    'https://emwgvbrrcmhagnxgcgkl.supabase.co',
+    'sb_publishable_3jvRGSo3EdNBsk4emUD-kQ_EW4IWu3I'
+  );
+</script>
+<div class="module-switcher-shell">
+  <div class="module-switcher">
+    <div class="module-switcher-brand">Shipping Azul • Operação</div>
+    <div class="module-tabs">
+      <button class="module-tab active" type="button" data-module-target="plannerModule">👥 Plano de Equipe</button>
+      <button class="module-tab" type="button" data-module-target="loadingModule">🚛 Controle de Carregamento</button>
+      <button class="module-tab" type="button" data-module-target="historyModule">🗓 Histórico Diário</button>
+      <button class="module-tab" type="button" data-module-target="productivityModule">📈 Produtividade</button>
+      <button class="module-tab" type="button" data-module-target="qrModule">▣ QR Codes</button>
+    </div>
+  </div>
+</div>
+<div id="plannerModule" class="app module-view active">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">SA</div>
+      <div>
+        <h1>Shipping Azul • Plano Diário</h1>
+        <p id="todayLabel">Organização diária do setor</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn soft" id="manageFunctionsBtn">⚙ Funções</button>
+      <button class="btn" id="addEmployeeBtn">＋ Funcionário</button>
+      <button class="btn primary" id="addSynergyBtn">＋ Sinergia</button>
+      <button class="btn" id="closeDayBtn">🗓 Salvar no Histórico</button>
+      <button class="btn danger" id="newDayBtn">↻ Novo Dia</button>
+    </div>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi"><div class="kpi-icon">👥</div><div><div class="kpi-label">Funcionários</div><div class="kpi-value" id="kpiTotal">0</div></div></div>
+    <div class="kpi"><div class="kpi-icon">✓</div><div><div class="kpi-label">Presentes</div><div class="kpi-value" id="kpiPresent">0</div></div></div>
+    <div class="kpi"><div class="kpi-icon">×</div><div><div class="kpi-label">Ausentes</div><div class="kpi-value" id="kpiAbsent">0</div></div></div>
+    <div class="kpi"><div class="kpi-icon">⇄</div><div><div class="kpi-label">Sinergia</div><div class="kpi-value" id="kpiSynergy">0</div></div></div>
+    <div class="kpi"><div class="kpi-icon">◎</div><div><div class="kpi-label">Disponíveis hoje</div><div class="kpi-value" id="kpiAvailable">0</div></div></div>
+  </section>
+
+  <main class="layout">
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><h2>FUNCIONÁRIOS</h2><span class="count" id="employeeCountLabel">0</span></div>
+        <button class="btn small" id="quickAllPresentBtn" title="Marca todos os funcionários filtrados como presentes">✓ Marcar filtrados presentes</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><input class="field" id="searchInput" placeholder="Buscar nome, SO ou OPS..."></div>
+        <select class="select" id="statusFilter">
+          <option value="all">Todos</option>
+          <option value="presente">Presentes</option>
+          <option value="ausente">Ausentes</option>
+          <option value="sinergia">Sinergia</option>
+          <option value="sem-status">Sem status</option>
+        </select>
+        <select class="select" id="functionFilter"><option value="all">Todas as funções</option></select>
+      </div>
+      <div class="employee-scroll">
+        <table>
+          <thead><tr><th>Funcionário</th><th>Status</th><th>Função do dia</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="employeeTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><h2>PLANEJADO × REAL</h2></div>
+        <span class="count" id="coverageLabel">0 alocados</span>
+      </div>
+      <div class="panel-body">
+        <div class="plan-stack" id="planningRows"></div>
+        <div class="legend"><span><i class="dot red"></i> Falta gente</span><span><i class="dot green"></i> Completo</span><span><i class="dot amber"></i> Acima</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title"><h2>PLANO DO DIA</h2><span class="count" id="planCountLabel">0 pessoas</span></div>
+      </div>
+      <div class="panel-body">
+        <div class="day-plan" id="dayPlan"></div>
+      </div>
+    </section>
+  </main>
+
+  <section class="panel synergy-section">
+    <div class="panel-head">
+      <div class="panel-title"><h2>SINERGIA</h2><span class="count" id="synergyCountLabel">0</span></div>
+      <button class="btn primary small" id="addSynergyBtnBottom">＋ Adicionar pessoa da sinergia</button>
+    </div>
+    <div class="synergy-table-wrap">
+      <table>
+        <thead><tr><th>Nome</th><th>SO</th><th>OPS</th><th>Setor de origem</th><th>Função no setor</th><th style="text-align:right">Ações</th></tr></thead>
+        <tbody id="synergyTableBody"></tbody>
+      </table>
+      <div class="synergy-empty" id="synergyEmpty">Nenhuma pessoa de sinergia cadastrada para hoje.</div>
+    </div>
+  </section>
+</div>
+
+
+<div id="loadingModule" class="app module-view">
+  <header class="lc-header">
+    <div class="lc-brand"><h1>🚛 Controle de Carregamento</h1><p>LT • carga • equipe • tempos • doca • liberação • histórico</p></div>
+    <div class="lc-actions">
+      <button class="lc-btn" id="lc-new-top" type="button">＋ Novo carregamento</button>
+      <button class="lc-btn dark" id="lc-export" type="button">⇩ Exportar CSV</button>
+      <button class="lc-btn dark" id="lc-backup" type="button">💾 Backup</button>
+      <label class="lc-btn dark" style="cursor:pointer">↥ Restaurar<input id="lc-restore" type="file" accept=".json" hidden></label>
+    </div>
+  </header>
+
+  <section class="lc-grid lc-cards">
+    <div class="lc-card"><div class="lc-label">Caminhões hoje</div><div class="lc-metric" id="lc-mTotal">0</div></div>
+    <div class="lc-card"><div class="lc-label">Em operação</div><div class="lc-metric" id="lc-mOp">0</div></div>
+    <div class="lc-card"><div class="lc-label">Finalizados</div><div class="lc-metric" id="lc-mFin">0</div></div>
+    <div class="lc-card"><div class="lc-label">Pacotes hoje</div><div class="lc-metric" id="lc-mPac">0</div></div>
+    <div class="lc-card"><div class="lc-label">Tempo médio carga</div><div class="lc-metric" id="lc-mAvg">—</div></div>
+    <div class="lc-card"><div class="lc-label">Tempo médio total</div><div class="lc-metric" id="lc-mTotalAvg">—</div></div>
+  </section>
+
+  <section class="lc-grid lc-layout">
+    <div class="lc-panel" id="lc-formPanel">
+      <h2 id="lc-formTitle">Novo carregamento</h2>
+      <input type="hidden" id="lc-editId">
+
+      <div class="lc-section first"><h3>Identificação</h3>
+        <div class="lc-formgrid">
+          <div><label>Data *</label><input type="date" id="lc-data"></div>
+          <div><label>LT / Pedido *</label><input id="lc-lt" placeholder="Ex.: LT123456"></div>
+          <div><label>Destino *</label><input id="lc-destino" placeholder="Destino do caminhão"></div>
+          <div><label>Motorista *</label><input id="lc-motorista" placeholder="Nome do motorista"></div>
+          <div><label>Placa</label><input id="lc-placa" placeholder="ABC1D23"></div>
+          <div><label>Tipo de veículo</label><select id="lc-veiculo"><option value="">Selecione</option><option>Truck</option><option>Carreta</option><option>Bitrem</option><option>VUC</option><option>Outro</option></select></div>
+          <div><label>Doca</label><input id="lc-doca" placeholder="Ex.: D12"></div>
+        </div>
+      </div>
+
+      <div class="lc-section"><h3>Linha do tempo</h3>
+        <div class="lc-timeline">
+          <div class="lc-timebox"><label>Chegada na portaria</label><input type="datetime-local" id="lc-chegada"></div>
+          <div class="lc-timebox"><label>Horário de aceite</label><input type="datetime-local" id="lc-aceite"></div>
+          <div class="lc-timebox"><label>Entrada na doca</label><input type="datetime-local" id="lc-docaHora"></div>
+          <div class="lc-timebox"><label>Carga pronta</label><input type="datetime-local" id="lc-cargaPronta"></div>
+          <div class="lc-timebox"><label>Início do carregamento</label><input type="datetime-local" id="lc-inicio"></div>
+          <div class="lc-timebox"><label>Fim do carregamento</label><input type="datetime-local" id="lc-fim"></div>
+          <div class="lc-timebox"><label>Liberação</label><input type="datetime-local" id="lc-liberacao"></div>
+          <div class="lc-timebox"><label>Meta de carregamento (min)</label><input type="number" id="lc-meta" min="1" value="60"></div>
+        </div>
+      </div>
+
+      <div class="lc-section"><h3>Responsáveis</h3>
+        <div class="lc-formgrid">
+          <div><label>Responsável pelo aceite</label><input id="lc-aceitePor" placeholder="Nome"></div>
+          <div><label>Responsável pela liberação</label><input id="lc-liberadoPor" placeholder="Nome"></div>
+          <div class="lc-full">
+            <div class="lc-team-row"><div><label>Equipe / pessoas que carregaram</label><input id="lc-equipe" placeholder="Ex.: Hugo, Carlos, Pedro"></div><button type="button" class="lc-btn soft" id="lc-fill-team">Usar Plano do Dia</button></div>
+            <p class="lc-help">O botão acima puxa automaticamente funcionários presentes com função e pessoas da sinergia alocadas no Plano do Dia.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lc-section"><h3>Características da carga</h3>
+        <div id="lc-comp"></div>
+        <button type="button" class="lc-btn dark" id="lc-add-comp">＋ Adicionar característica</button>
+        <div class="lc-totals"><span>Volumes: <b id="lc-totVol">0</b></span><span>Pacotes: <b id="lc-totPac">0</b></span></div>
+        <div class="lc-formgrid" style="margin-top:8px">
+          <div><label>Total de pacotes</label><input type="number" id="lc-pacotes" min="0" value="0"></div>
+          <div><label>Peso total (kg) — opcional</label><input type="number" id="lc-peso" min="0" step="0.01" value="0"></div>
+        </div>
+        <p class="lc-help">A porcentagem de cada característica é calculada sobre a quantidade total de volumes cadastrados.</p>
+      </div>
+
+      <div class="lc-section"><h3>Status e observações</h3>
+        <div class="lc-formgrid">
+          <div><label>Status</label><select id="lc-status"><option>Aguardando</option><option>Carregando</option><option>Finalizado</option><option>Atrasado</option></select></div>
+          <div><label>Motivo da espera/atraso</label><select id="lc-motivo"><option value="">Nenhum</option><option>Carga não pronta</option><option>Aguardando doca</option><option>Aguardando operador</option><option>Aguardando equipamento</option><option>Problema documental</option><option>Problema com veículo</option><option>Aguardando liberação</option><option>Outro</option></select></div>
+          <div class="lc-full"><label>Observações</label><textarea id="lc-obs" placeholder="Registre ocorrências, divergências ou informações importantes..."></textarea></div>
+        </div>
+      </div>
+      <div class="lc-form-actions"><button class="lc-btn primary" id="lc-save" type="button">Salvar carregamento</button><button class="lc-btn" id="lc-clear" type="button">Limpar</button></div>
+    </div>
+
+    <div class="lc-panel">
+      <div class="lc-history-head"><h2>Histórico de carregamentos</h2><span class="count" id="lc-history-count">0 registros</span></div>
+      <div class="lc-filters">
+        <input id="lc-busca" placeholder="🔎 LT, placa, motorista...">
+        <input type="date" id="lc-fData">
+        <select id="lc-fStatus"><option value="">Todos os status</option><option>Aguardando</option><option>Carregando</option><option>Finalizado</option><option>Atrasado</option></select>
+        <input id="lc-fDestino" placeholder="Destino">
+        <button class="lc-btn" id="lc-clear-filters" type="button">Limpar filtros</button>
+      </div>
+      <div class="lc-tablewrap"><table><thead><tr>
+        <th>LT</th><th>Destino</th><th>Motorista</th><th>Placa</th><th>Doca</th><th>Status</th><th>Chegada</th><th>Início</th><th>Fim</th><th>Liberação</th><th>Tempo carga</th><th>Tempo total</th><th>Volumes</th><th>Pacotes</th><th>Ações</th>
+      </tr></thead><tbody id="lc-tbody"></tbody></table></div>
+      <div id="lc-empty" class="lc-empty" style="display:none">Nenhum carregamento encontrado.</div>
+    </div>
+  </section>
+</div>
+
+
+
+<div id="historyModule" class="app module-view">
+  <header class="submodule-header">
+    <div><h1>🗓 Histórico Diário</h1><p>Fechamentos do Plano de Equipe • presença • alocação • sinergia • carregamentos • produtividade</p></div>
+    <div class="submodule-actions">
+      <button class="btn primary" type="button" id="history-save-today">💾 Salvar / Atualizar Hoje</button>
+      <button class="btn danger" type="button" id="history-delete-day">🗑 Excluir dia selecionado</button>
+    </div>
+  </header>
+  <section class="history-kpis">
+    <div class="mini-kpi"><div class="mk-label">Presentes</div><div class="mk-value" id="hist-kpi-present">—</div><div class="mk-sub">equipe fixa</div></div>
+    <div class="mini-kpi"><div class="mk-label">Ausentes</div><div class="mk-value" id="hist-kpi-absent">—</div><div class="mk-sub">no fechamento</div></div>
+    <div class="mini-kpi"><div class="mk-label">Sinergia</div><div class="mk-value" id="hist-kpi-synergy">—</div><div class="mk-sub">apoio externo</div></div>
+    <div class="mini-kpi"><div class="mk-label">Alocados</div><div class="mk-value" id="hist-kpi-allocated">—</div><div class="mk-sub">com função</div></div>
+    <div class="mini-kpi"><div class="mk-label">Carregamentos</div><div class="mk-value" id="hist-kpi-loads">—</div><div class="mk-sub">registros na data</div></div>
+    <div class="mini-kpi"><div class="mk-label">Bipes</div><div class="mk-value" id="hist-kpi-bipes">—</div><div class="mk-sub">produtividade lançada</div></div>
+  </section>
+  <section class="history-layout">
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title"><h2>DIAS SALVOS</h2><span class="count" id="history-count">0</span></div></div>
+      <div class="history-list" id="history-list"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title"><h2 id="history-detail-title">DETALHES DO DIA</h2></div><span class="count" id="history-saved-at">—</span></div>
+      <div class="history-details" id="history-details"><div class="empty"><div class="big">🗓</div><strong>Nenhum dia selecionado</strong>Salve o dia atual ou escolha um fechamento ao lado.</div></div>
+    </div>
+  </section>
+</div>
+
+<div id="productivityModule" class="app module-view">
+  <header class="submodule-header">
+    <div><h1>📈 Produtividade</h1><p>Lançamento manual de bipes • comparação justa por referência de setor • sem integração externa</p></div>
+    <div class="submodule-actions">
+      <label style="font-size:11px;font-weight:800;color:#d5deea">Data</label><input type="date" id="prod-date-filter">
+      <select id="prod-sector-filter"><option value="all">Todos os setores</option></select>
+      <button class="btn" type="button" id="prod-export">⇩ Exportar CSV</button>
+    </div>
+  </header>
+  <section class="prod-kpis">
+    <div class="mini-kpi"><div class="mk-label">Bipes na data</div><div class="mk-value" id="prod-kpi-bipes">0</div><div class="mk-sub">total lançado</div></div>
+    <div class="mini-kpi"><div class="mk-label">Pessoas lançadas</div><div class="mk-value" id="prod-kpi-people">0</div><div class="mk-sub">nomes únicos</div></div>
+    <div class="mini-kpi"><div class="mk-label">Melhor índice</div><div class="mk-value" id="prod-kpi-best">—</div><div class="mk-sub" id="prod-kpi-best-sub">sem referência</div></div>
+    <div class="mini-kpi"><div class="mk-label">Setor destaque</div><div class="mk-value" id="prod-kpi-sector">—</div><div class="mk-sub">maior índice somado</div></div>
+    <div class="mini-kpi"><div class="mk-label">Com horas informadas</div><div class="mk-value" id="prod-kpi-hours">0</div><div class="mk-sub">permite % da meta/h</div></div>
+    <div class="mini-kpi"><div class="mk-label">Lançamentos</div><div class="mk-value" id="prod-kpi-records">0</div><div class="mk-sub">na data filtrada</div></div>
+  </section>
+  <section class="prod-layout">
+    <div class="prod-panel">
+      <div class="prod-panel-head"><h2 id="prod-form-title">Adicionar produtividade</h2><button class="btn small" type="button" id="prod-clear-form">Limpar</button></div>
+      <div class="prod-panel-body">
+        <input type="hidden" id="prod-edit-id">
+        <div class="prod-form">
+          <div><label>Data</label><input type="date" id="prod-date"></div>
+          <div><label>Funcionário</label><select id="prod-person"></select></div>
+          <div><label>Setor</label><select id="prod-sector"></select></div>
+          <div><label>Quantidade de bipes</label><input type="number" id="prod-bipes" min="0" step="1" placeholder="Ex.: 1800"></div>
+          <div class="full"><label>Horas no setor — opcional</label><input type="number" id="prod-hours" min="0" step="0.25" placeholder="Ex.: 6,5"></div>
+          <div class="full"><label>Observação — opcional</label><textarea id="prod-note" placeholder="Ex.: ficou 2h apoiando outro setor..."></textarea></div>
+          <div class="full"><button class="btn primary" style="width:100%" type="button" id="prod-save">Salvar produtividade</button></div>
+        </div>
+        <div class="prod-note"><b>Sem integração:</b> as horas são opcionais. O ranking principal usa o total de bipes dividido pela referência do setor. Isso normaliza Leve x Volumoso sem afirmar que sabemos a produtividade horária real.</div>
+      </div>
+    </div>
+    <div class="prod-panel">
+      <div class="prod-panel-head"><h2>Referência por setor</h2><span class="count">bipes/h</span></div>
+      <div class="prod-panel-body">
+        <div class="goal-list" id="prod-goals"></div>
+        <div class="prod-note">Somente os setores que realizam bip aparecem aqui: <b>Leve = 300/h</b> e <b>Volumoso = 75/h</b>. Você pode ajustar essas duas referências quando quiser.</div>
+      </div>
+    </div>
+    <div class="prod-panel">
+      <div class="prod-panel-head"><h2>Melhores métricas do dia</h2><span class="count" id="prod-rank-count">0 pessoas</span></div>
+      <div class="prod-panel-body"><div class="rank-list" id="prod-ranking"></div></div>
+    </div>
+  </section>
+  <section class="prod-panel">
+    <div class="prod-panel-head"><h2>Lançamentos de produtividade</h2><span class="count" id="prod-history-count">0 registros</span></div>
+    <div class="prod-history-wrap"><table class="prod-history-table"><thead><tr><th>Data</th><th>Funcionário</th><th>Setor</th><th>Bipes</th><th>Referência/h</th><th>Índice</th><th>Horas</th><th>Bipes/h</th><th>% Meta/h</th><th>Observação</th><th>Ações</th></tr></thead><tbody id="prod-history-body"></tbody></table><div class="empty-inline" id="prod-history-empty">Nenhum lançamento para os filtros atuais.</div></div>
+  </section>
+</div>
+
+<div id="qrModule" class="app module-view">
+  <header class="submodule-header">
+    <div><h1>▣ QR Codes dos Funcionários</h1><p>Entrada rápida no serviço • alterne entre S0 e OPS • QR gerado diretamente do cadastro</p></div>
+    <div class="submodule-actions"><span class="count" id="qr-header-count">0 funcionários</span></div>
+  </header>
+
+  <section class="qr-summary">
+    <div class="mini-kpi"><div class="mk-label">Funcionários</div><div class="mk-value" id="qr-kpi-total">0</div><div class="mk-sub">cadastro permanente</div></div>
+    <div class="mini-kpi"><div class="mk-label" id="qr-kpi-with-label">Com S0</div><div class="mk-value" id="qr-kpi-with">0</div><div class="mk-sub">QR disponível</div></div>
+    <div class="mini-kpi"><div class="mk-label" id="qr-kpi-missing-label">Sem S0</div><div class="mk-value" id="qr-kpi-missing">0</div><div class="mk-sub">precisa completar o cadastro</div></div>
+  </section>
+
+  <section class="qr-toolbar">
+    <div class="qr-search-wrap"><input id="qr-search" placeholder="🔎 Buscar por nome, S0 ou OPS..."></div>
+    <div class="qr-mode" aria-label="Escolher código exibido">
+      <span class="qr-mode-label">Mostrar</span>
+      <button class="qr-mode-btn active" type="button" id="qr-mode-so" data-qr-mode="so">S0</button>
+      <button class="qr-mode-btn" type="button" id="qr-mode-ops" data-qr-mode="ops">OPS</button>
+    </div>
+  </section>
+
+  <section class="qr-grid" id="qr-grid"></section>
+</div>
+
+<dialog id="employeeDialog">
+  <form id="employeeForm">
+    <div class="modal-head"><h3 id="employeeDialogTitle">Adicionar funcionário</h3><button type="button" class="modal-close" data-close="employeeDialog">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-row full"><label>Nome completo</label><input class="modal-input" id="employeeName" required></div>
+        <div class="form-row"><label>SO / S0</label><input class="modal-input" id="employeeSo" placeholder="Ex.: S020559"></div>
+        <div class="form-row"><label>OPS</label><input class="modal-input" id="employeeOps" placeholder="Ex.: Ops391402"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn" data-close="employeeDialog">Cancelar</button><button type="submit" class="btn primary">Salvar funcionário</button></div>
+  </form>
+</dialog>
+
+<dialog id="synergyDialog">
+  <form id="synergyForm">
+    <div class="modal-head"><h3 id="synergyDialogTitle">Adicionar sinergia</h3><button type="button" class="modal-close" data-close="synergyDialog">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-row full"><label>Nome</label><input class="modal-input" id="synergyName" required></div>
+        <div class="form-row"><label>SO / S0 (opcional)</label><input class="modal-input" id="synergySo"></div>
+        <div class="form-row"><label>OPS (opcional)</label><input class="modal-input" id="synergyOps"></div>
+        <div class="form-row"><label>Setor de origem</label><input class="modal-input" id="synergyOrigin" placeholder="Ex.: Receiving" required></div>
+        <div class="form-row"><label>Função no nosso setor</label><select class="modal-input" id="synergyFunction" required></select></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn" data-close="synergyDialog">Cancelar</button><button type="submit" class="btn primary">Salvar sinergia</button></div>
+  </form>
+</dialog>
+
+<dialog id="functionsDialog">
+  <div class="modal-head"><h3>Gerenciar funções</h3><button type="button" class="modal-close" data-close="functionsDialog">×</button></div>
+  <div class="modal-body">
+    <p class="hint">Você pode renomear, excluir ou criar funções. Ao renomear, as alocações e o planejamento existentes são atualizados automaticamente.</p>
+    <div class="functions-list" id="functionsList"></div>
+    <div class="add-function-row"><input class="modal-input" id="newFunctionName" placeholder="Nome da nova função"><button class="btn primary" id="addFunctionConfirmBtn" type="button">Adicionar</button></div>
+  </div>
+  <div class="modal-foot"><button type="button" class="btn primary" data-close="functionsDialog">Concluir</button></div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const STORAGE_KEY = 'shippingAzulPlanner_v1';
+
+  const seedEmployees = [
+    ['BRUNA DA SILVA RODRIGUES','S020559','Ops391402'],
+    ['ANA LUIZA PACHECO DOS S. MARTINS','S023486','Ops468192'],
+    ['GRAZIELA ALVES DE OLIVEIRA ALMEIDA','S029467','Ops545289'],
+    ['CARLOS HENRIQUE DOS SANTOS','S024917','Ops497713'],
+    ['DOUGLAS WANDERSON DA COSTA','S024385','Ops490851'],
+    ['GEOVANA STEFANY COELHO GONÇALVES','S025499','Ops505480'],
+    ['HUGO GABRIEL QUEIROZ DE SOUZA','S020595','Ops392726'],
+    ['JOAO CARLOS SILVEIRA','S022453','Ops445423'],
+    ['MARÍA DAS NEVES DOS SANTOS','S023866','Ops481669'],
+    ['NIKOLAS CRISTIAN SOUZA AGUIAR','S025208','Ops499836'],
+    ['NILSON DA SILVA GONÇALVES','S025496','Ops505486'],
+    ['LEONARDO PEREIRA DA SILVA','S026272','Ops511959'],
+    ['EMERSON MENDES GOULAT','S023848','Ops478888'],
+    ['IAN REZENDE','S024391','Ops490877'],
+    ['NICOLAS GLADSTONE RIBEIRO XAVIER','S021655','Ops421749'],
+    ['IAGO CRISTIAN DA SILVA MAGALHÃES','S026232','Ops295867'],
+    ['SOPHIA GONÇALVES DA COSTA','S028145','Ops537654'],
+    ['JOÃO PAULO APARECIDO ALVES','S028132','Ops537602'],
+    ['IZABEL PEREIRA DA SILVA PINHEIRO','S028129','Ops537595'],
+    ['DANIEL ARTUR MOUTINHO DA PAIXÃO','S023871','Ops478879'],
+    ['BEATRIZ FIGUEIREDO GOMES','S029463','Ops545259'],
+    ['GUILHERME AUGUSTO LOMBA LIMA','S028125','Ops537589']
+  ];
+
+  const defaultFunctions = ['PS','Leve','Volumoso','Pesca','Apoio','Apoio Leve','Apoio Volumoso','Carregamento'];
+  const seedPlan = { 'PS':0, 'Leve':3, 'Volumoso':3, 'Pesca':8, 'Apoio':3, 'Apoio Leve':0, 'Apoio Volumoso':0, 'Carregamento':0 };
+
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+  const normalize = v => (v ?? '').toString().trim();
+  const esc = s => normalize(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const initials = name => normalize(name).split(/\s+/).filter(Boolean).slice(0,2).map(n=>n[0]).join('').toUpperCase();
+  const firstName = name => normalize(name).split(/\s+/)[0] || '';
+
+  function buildInitialState(){
+    return {
+      version:1,
+      employees: seedEmployees.map(([name,so,ops]) => ({id:uid(), name, so, ops, status:'', function:''})),
+      functions:[...defaultFunctions],
+      planning:{...seedPlan},
+      synergy:[]
+    };
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return buildInitialState();
+      const parsed = JSON.parse(raw);
+      if(!parsed || !Array.isArray(parsed.employees) || !Array.isArray(parsed.functions)) return buildInitialState();
+      parsed.planning = parsed.planning || {};
+      parsed.synergy = Array.isArray(parsed.synergy) ? parsed.synergy : [];
+      parsed.employees = parsed.employees.map(e=>({id:e.id||uid(),name:normalize(e.name),so:normalize(e.so),ops:normalize(e.ops),status:e.status||'',function:e.function||''}));
+      return parsed;
+    }catch(err){
+      console.warn('Falha ao carregar dados locais:', err);
+      return buildInitialState();
+    }
+  }
+
+  let state = loadState();
+  let editingEmployeeId = null;
+  let editingSynergyId = null;
+
+  const $ = sel => document.querySelector(sel);
+  const els = {
+    todayLabel:$('#todayLabel'), kpiTotal:$('#kpiTotal'), kpiPresent:$('#kpiPresent'), kpiAbsent:$('#kpiAbsent'), kpiSynergy:$('#kpiSynergy'), kpiAvailable:$('#kpiAvailable'),
+    employeeCountLabel:$('#employeeCountLabel'), employeeTableBody:$('#employeeTableBody'), planningRows:$('#planningRows'), dayPlan:$('#dayPlan'), planCountLabel:$('#planCountLabel'), coverageLabel:$('#coverageLabel'),
+    synergyTableBody:$('#synergyTableBody'), synergyEmpty:$('#synergyEmpty'), synergyCountLabel:$('#synergyCountLabel'),
+    searchInput:$('#searchInput'), statusFilter:$('#statusFilter'), functionFilter:$('#functionFilter'),
+    employeeDialog:$('#employeeDialog'), employeeForm:$('#employeeForm'), employeeDialogTitle:$('#employeeDialogTitle'), employeeName:$('#employeeName'), employeeSo:$('#employeeSo'), employeeOps:$('#employeeOps'),
+    synergyDialog:$('#synergyDialog'), synergyForm:$('#synergyForm'), synergyDialogTitle:$('#synergyDialogTitle'), synergyName:$('#synergyName'), synergySo:$('#synergySo'), synergyOps:$('#synergyOps'), synergyOrigin:$('#synergyOrigin'), synergyFunction:$('#synergyFunction'),
+    functionsDialog:$('#functionsDialog'), functionsList:$('#functionsList'), newFunctionName:$('#newFunctionName'), toast:$('#toast')
+  };
+
+  function save(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch(err){ console.warn('Não foi possível salvar no localStorage:', err); }
+  }
+
+  function showToast(message){
+    els.toast.textContent = message;
+    els.toast.classList.add('show');
+    clearTimeout(showToast.t);
+    showToast.t = setTimeout(()=>els.toast.classList.remove('show'), 1900);
+  }
+
+  function statusLabel(status){
+    return ({'':'Sem status',presente:'Presente',ausente:'Ausente',sinergia:'Sinergia'})[status] || 'Sem status';
+  }
+
+  function statusClass(status){
+    return ({presente:'status-present',ausente:'status-absent',sinergia:'status-synergy'})[status] || 'status-empty';
+  }
+
+  function functionOptions(selected, includeEmpty=true){
+    const empty = includeEmpty ? '<option value="">Sem função</option>' : '<option value="" disabled>Selecione...</option>';
+    return empty + state.functions.map(fn => `<option value="${esc(fn)}" ${fn===selected?'selected':''}>${esc(fn)}</option>`).join('');
+  }
+
+  function filteredEmployees(){
+    const q = normalize(els.searchInput.value).toLowerCase();
+    const sf = els.statusFilter.value;
+    const ff = els.functionFilter.value;
+    return state.employees.filter(e=>{
+      const hay = `${e.name} ${e.so} ${e.ops}`.toLowerCase();
+      if(q && !hay.includes(q)) return false;
+      if(sf !== 'all'){
+        if(sf === 'sem-status' && e.status) return false;
+        if(sf !== 'sem-status' && e.status !== sf) return false;
+      }
+      if(ff !== 'all' && e.function !== ff) return false;
+      return true;
+    });
+  }
+
+  function realCounts(){
+    const counts = Object.fromEntries(state.functions.map(fn=>[fn,0]));
+    state.employees.forEach(e=>{
+      if(e.status==='presente' && e.function && counts[e.function] !== undefined) counts[e.function]++;
+    });
+    state.synergy.forEach(s=>{
+      if(s.function && counts[s.function] !== undefined) counts[s.function]++;
+    });
+    return counts;
+  }
+
+  function planPeople(){
+    const groups = Object.fromEntries(state.functions.map(fn=>[fn,[]]));
+    state.employees.forEach(e=>{
+      if(e.status==='presente' && e.function && groups[e.function]) groups[e.function].push({name:e.name,type:'team'});
+    });
+    state.synergy.forEach(s=>{
+      if(s.function && groups[s.function]) groups[s.function].push({name:s.name,type:'synergy',origin:s.origin});
+    });
+    return groups;
+  }
+
+  function renderKpis(){
+    const present = state.employees.filter(e=>e.status==='presente').length;
+    const absent = state.employees.filter(e=>e.status==='ausente').length;
+    const synergyCount = state.synergy.length;
+    els.kpiTotal.textContent = state.employees.length;
+    els.kpiPresent.textContent = present;
+    els.kpiAbsent.textContent = absent;
+    els.kpiSynergy.textContent = synergyCount;
+    els.kpiAvailable.textContent = present + synergyCount;
+  }
+
+  function renderFilters(){
+    const current = els.functionFilter.value || 'all';
+    els.functionFilter.innerHTML = '<option value="all">Todas as funções</option>' + state.functions.map(fn=>`<option value="${esc(fn)}">${esc(fn)}</option>`).join('');
+    els.functionFilter.value = state.functions.includes(current) ? current : 'all';
+  }
+
+  function renderEmployees(){
+    const rows = filteredEmployees();
+    els.employeeCountLabel.textContent = `${rows.length} de ${state.employees.length}`;
+    if(!rows.length){
+      els.employeeTableBody.innerHTML = '<tr><td colspan="4"><div class="empty" style="padding:26px"><strong>Nenhum funcionário encontrado</strong>Ajuste a busca ou os filtros.</div></td></tr>';
+      return;
+    }
+    els.employeeTableBody.innerHTML = rows.map(e=>`
+      <tr data-id="${e.id}">
+        <td>
+          <div class="person">
+            <div class="avatar">${esc(initials(e.name))}</div>
+            <div style="min-width:0"><div class="person-name" title="${esc(e.name)}">${esc(e.name)}</div><div class="person-meta">${esc(e.so||'Sem SO')} · ${esc(e.ops||'Sem OPS')}</div></div>
+          </div>
+        </td>
+        <td>
+          <select class="inline-select status ${statusClass(e.status)}" data-action="status" data-id="${e.id}">
+            <option value="" ${e.status===''?'selected':''}>Sem status</option>
+            <option value="presente" ${e.status==='presente'?'selected':''}>Presente</option>
+            <option value="ausente" ${e.status==='ausente'?'selected':''}>Ausente</option>
+            <option value="sinergia" ${e.status==='sinergia'?'selected':''}>Sinergia</option>
+          </select>
+        </td>
+        <td><select class="inline-select" data-action="function" data-id="${e.id}" ${e.status==='ausente'?'disabled title="Funcionário ausente"':''}>${functionOptions(e.function)}</select></td>
+        <td><div class="action-row"><button class="mini-action" title="Editar cadastro" data-action="edit" data-id="${e.id}">✎</button><button class="mini-action delete" title="Excluir funcionário" data-action="delete" data-id="${e.id}">🗑</button></div></td>
+      </tr>`).join('');
+  }
+
+  function renderPlanning(){
+    const counts = realCounts();
+    let allocated = 0;
+    els.planningRows.innerHTML = state.functions.map(fn=>{
+      const planned = Math.max(0, Number(state.planning[fn] ?? 0) || 0);
+      const real = counts[fn] || 0;
+      allocated += real;
+      const diff = real - planned;
+      let kind = 'complete', stateText = '✓ Completo';
+      if(diff < 0){ kind='shortage'; stateText=`⚠ Faltam ${Math.abs(diff)} ${Math.abs(diff)===1?'pessoa':'pessoas'}`; }
+      else if(diff > 0){ kind='excess'; stateText=`＋ ${diff} ${diff===1?'pessoa acima':'pessoas acima'} do planejado`; }
+      return `<div class="planning-row ${kind}">
+        <div class="planning-fn" title="${esc(fn)}">${esc(fn)}</div>
+        <div><div class="num-label">Planejado</div><input class="num-box" type="number" min="0" step="1" value="${planned}" data-plan-function="${esc(fn)}"></div>
+        <div><div class="num-label">Real</div><div class="num-static">${real}</div></div>
+        <div><div class="num-label">Dif.</div><div class="num-static ${diff<0?'diff-neg':diff>0?'diff-pos':'diff-zero'}">${diff>0?'+':''}${diff}</div></div>
+        <div class="planning-state ${kind}">${stateText}</div>
+      </div>`;
+    }).join('');
+    els.coverageLabel.textContent = `${allocated} alocados`;
+  }
+
+  function renderDayPlan(){
+    const groups = planPeople();
+    const nonEmpty = state.functions.filter(fn=>groups[fn].length);
+    const count = nonEmpty.reduce((sum,fn)=>sum+groups[fn].length,0);
+    els.planCountLabel.textContent = `${count} ${count===1?'pessoa':'pessoas'}`;
+    if(!nonEmpty.length){
+      els.dayPlan.innerHTML = '<div class="empty"><div class="big">▦</div><strong>Plano do dia vazio</strong>Marque funcionários como presentes e selecione suas funções.</div>';
+      return;
+    }
+    els.dayPlan.innerHTML = nonEmpty.map(fn=>{
+      const people = groups[fn];
+      return `<div class="plan-group"><div class="plan-group-head"><strong>${esc(fn.toUpperCase())}</strong><span>${people.length} ${people.length===1?'pessoa':'pessoas'}</span></div><div class="plan-names">${people.map(p=>`<div class="plan-person"><span class="plan-person-name">${esc(firstName(p.name))}</span><span class="tag ${p.type==='synergy'?'synergy':'team'}">${p.type==='synergy'?'SINERGIA':'EQUIPE'}</span></div>`).join('')}</div></div>`;
+    }).join('');
+  }
+
+  function renderSynergy(){
+    els.synergyCountLabel.textContent = state.synergy.length;
+    els.synergyEmpty.style.display = state.synergy.length ? 'none' : 'block';
+    els.synergyTableBody.innerHTML = state.synergy.map(s=>`
+      <tr class="synergy-row">
+        <td><div class="person"><div class="avatar" style="background:var(--purple-soft);color:var(--purple)">${esc(initials(s.name))}</div><div><div class="person-name" style="max-width:260px">${esc(s.name)}</div><div class="person-meta">Pessoa de sinergia</div></div></div></td>
+        <td>${esc(s.so||'—')}</td><td>${esc(s.ops||'—')}</td>
+        <td><strong>${esc(s.origin||'—')}</strong></td>
+        <td><select class="inline-select" data-synergy-action="function" data-id="${s.id}">${functionOptions(s.function,false)}</select></td>
+        <td><div class="action-row"><button class="mini-action" data-synergy-action="edit" data-id="${s.id}" title="Editar">✎</button><button class="mini-action delete" data-synergy-action="delete" data-id="${s.id}" title="Excluir">🗑</button></div></td>
+      </tr>`).join('');
+  }
+
+  function renderFunctionsDialog(){
+    els.functionsList.innerHTML = state.functions.map((fn,index)=>`
+      <div class="function-edit-row">
+        <input class="modal-input" value="${esc(fn)}" data-function-index="${index}">
+        <button class="btn small" type="button" data-function-save="${index}">Salvar</button>
+        <button class="btn small danger" type="button" data-function-delete="${index}">Excluir</button>
+      </div>`).join('');
+  }
+
+  function renderAll(){
+    renderKpis();
+    renderFilters();
+    renderEmployees();
+    renderPlanning();
+    renderDayPlan();
+    renderSynergy();
+    save();
+  }
+
+  function openEmployeeDialog(id=null){
+    editingEmployeeId = id;
+    const e = id ? state.employees.find(x=>x.id===id) : null;
+    els.employeeDialogTitle.textContent = e ? 'Editar funcionário' : 'Adicionar funcionário';
+    els.employeeName.value = e?.name || '';
+    els.employeeSo.value = e?.so || '';
+    els.employeeOps.value = e?.ops || '';
+    els.employeeDialog.showModal();
+    setTimeout(()=>els.employeeName.focus(),30);
+  }
+
+  function openSynergyDialog(id=null){
+    editingSynergyId = id;
+    const s = id ? state.synergy.find(x=>x.id===id) : null;
+    els.synergyDialogTitle.textContent = s ? 'Editar sinergia' : 'Adicionar sinergia';
+    els.synergyName.value = s?.name || '';
+    els.synergySo.value = s?.so || '';
+    els.synergyOps.value = s?.ops || '';
+    els.synergyOrigin.value = s?.origin || '';
+    els.synergyFunction.innerHTML = functionOptions(s?.function || '', false);
+    els.synergyDialog.showModal();
+    setTimeout(()=>els.synergyName.focus(),30);
+  }
+
+  function renameFunction(index,newName){
+    const oldName = state.functions[index];
+    newName = normalize(newName);
+    if(!newName) return showToast('O nome da função não pode ficar vazio.');
+    if(state.functions.some((f,i)=>i!==index && f.toLowerCase()===newName.toLowerCase())) return showToast('Já existe uma função com esse nome.');
+    if(oldName===newName) return showToast('Nenhuma alteração necessária.');
+    state.functions[index] = newName;
+    state.planning[newName] = state.planning[oldName] ?? 0;
+    delete state.planning[oldName];
+    state.employees.forEach(e=>{ if(e.function===oldName) e.function=newName; });
+    state.synergy.forEach(s=>{ if(s.function===oldName) s.function=newName; });
+    renderFunctionsDialog(); renderAll(); showToast('Função renomeada.');
+  }
+
+  function deleteFunction(index){
+    const fn = state.functions[index];
+    const inUse = state.employees.some(e=>e.function===fn) || state.synergy.some(s=>s.function===fn);
+    const msg = inUse ? `A função “${fn}” está sendo usada. Ao excluir, essas pessoas ficarão sem função. Continuar?` : `Excluir a função “${fn}”?`;
+    if(!confirm(msg)) return;
+    state.functions.splice(index,1);
+    delete state.planning[fn];
+    state.employees.forEach(e=>{ if(e.function===fn) e.function=''; });
+    state.synergy.forEach(s=>{ if(s.function===fn) s.function=''; });
+    renderFunctionsDialog(); renderAll(); showToast('Função excluída.');
+  }
+
+  els.employeeForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const name=normalize(els.employeeName.value), so=normalize(els.employeeSo.value), ops=normalize(els.employeeOps.value);
+    if(!name) return;
+    if(editingEmployeeId){
+      const emp=state.employees.find(x=>x.id===editingEmployeeId); if(emp){emp.name=name;emp.so=so;emp.ops=ops;}
+      showToast('Cadastro atualizado.');
+    } else {
+      state.employees.push({id:uid(),name,so,ops,status:'',function:''});
+      showToast('Funcionário adicionado.');
+    }
+    els.employeeDialog.close(); renderAll();
+  });
+
+  els.synergyForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const data={name:normalize(els.synergyName.value),so:normalize(els.synergySo.value),ops:normalize(els.synergyOps.value),origin:normalize(els.synergyOrigin.value),function:els.synergyFunction.value};
+    if(!data.name || !data.origin || !data.function) return;
+    if(editingSynergyId){
+      const item=state.synergy.find(x=>x.id===editingSynergyId); if(item) Object.assign(item,data);
+      showToast('Sinergia atualizada.');
+    }else{
+      state.synergy.push({id:uid(),...data}); showToast('Pessoa de sinergia adicionada.');
+    }
+    els.synergyDialog.close(); renderAll();
+  });
+
+  els.employeeTableBody.addEventListener('change', e=>{
+    const el=e.target, id=el.dataset.id, action=el.dataset.action;
+    if(!id || !action) return;
+    const emp=state.employees.find(x=>x.id===id); if(!emp) return;
+    if(action==='status'){
+      emp.status=el.value;
+      if(emp.status==='ausente') emp.function='';
+    }
+    if(action==='function') emp.function=el.value;
+    renderAll();
+  });
+
+  els.employeeTableBody.addEventListener('click', e=>{
+    const btn=e.target.closest('button[data-action]'); if(!btn) return;
+    const emp=state.employees.find(x=>x.id===btn.dataset.id); if(!emp) return;
+    if(btn.dataset.action==='edit') openEmployeeDialog(emp.id);
+    if(btn.dataset.action==='delete'){
+      if(confirm(`Excluir ${emp.name} do cadastro permanente?`)){
+        state.employees=state.employees.filter(x=>x.id!==emp.id); renderAll(); showToast('Funcionário excluído.');
+      }
+    }
+  });
+
+  els.planningRows.addEventListener('change', e=>{
+    const fn=e.target.dataset.planFunction; if(!fn) return;
+    state.planning[fn]=Math.max(0,parseInt(e.target.value||'0',10)||0);
+    save(); renderPlanning(); renderDayPlan();
+  });
+
+  els.synergyTableBody.addEventListener('change', e=>{
+    const id=e.target.dataset.id, action=e.target.dataset.synergyAction; if(!id||!action) return;
+    const s=state.synergy.find(x=>x.id===id); if(!s) return;
+    if(action==='function'){s.function=e.target.value;renderAll();}
+  });
+
+  els.synergyTableBody.addEventListener('click', e=>{
+    const btn=e.target.closest('button[data-synergy-action]'); if(!btn) return;
+    const s=state.synergy.find(x=>x.id===btn.dataset.id); if(!s) return;
+    if(btn.dataset.synergyAction==='edit') openSynergyDialog(s.id);
+    if(btn.dataset.synergyAction==='delete' && confirm(`Remover ${s.name} da sinergia de hoje?`)){
+      state.synergy=state.synergy.filter(x=>x.id!==s.id);renderAll();showToast('Sinergia removida.');
+    }
+  });
+
+  els.functionsList.addEventListener('click', e=>{
+    const saveBtn=e.target.closest('[data-function-save]');
+    const delBtn=e.target.closest('[data-function-delete]');
+    if(saveBtn){const i=Number(saveBtn.dataset.functionSave);const input=els.functionsList.querySelector(`[data-function-index="${i}"]`);renameFunction(i,input.value);}
+    if(delBtn) deleteFunction(Number(delBtn.dataset.functionDelete));
+  });
+
+  $('#addFunctionConfirmBtn').addEventListener('click',()=>{
+    const name=normalize(els.newFunctionName.value);
+    if(!name) return showToast('Digite o nome da nova função.');
+    if(state.functions.some(f=>f.toLowerCase()===name.toLowerCase())) return showToast('Essa função já existe.');
+    state.functions.push(name); state.planning[name]=0; els.newFunctionName.value=''; renderFunctionsDialog(); renderAll(); showToast('Função adicionada.');
+  });
+
+  $('#addEmployeeBtn').addEventListener('click',()=>openEmployeeDialog());
+  $('#addSynergyBtn').addEventListener('click',()=>openSynergyDialog());
+  $('#addSynergyBtnBottom').addEventListener('click',()=>openSynergyDialog());
+  $('#manageFunctionsBtn').addEventListener('click',()=>{renderFunctionsDialog();els.functionsDialog.showModal();});
+  $('#closeDayBtn').addEventListener('click',()=>{
+    if(window.ShippingHistory?.saveToday) window.ShippingHistory.saveToday(true);
+    else showToast('Histórico ainda não está disponível.');
+  });
+
+  $('#newDayBtn').addEventListener('click',()=>{
+    if(!confirm('Iniciar um novo dia?\n\nAntes de limpar, o sistema salvará automaticamente o estado atual no Histórico Diário. Depois serão limpos status, funções do dia e sinergias temporárias. O cadastro permanente, as funções e o planejamento serão mantidos.')) return;
+    if(window.ShippingHistory?.saveToday) window.ShippingHistory.saveToday(false);
+    state.employees.forEach(e=>{e.status='';e.function='';});
+    state.synergy=[];
+    renderAll(); showToast('Dia arquivado e novo dia iniciado.');
+  });
+
+  $('#quickAllPresentBtn').addEventListener('click',()=>{
+    const rows=filteredEmployees(); if(!rows.length) return;
+    rows.forEach(e=>e.status='presente'); renderAll(); showToast(`${rows.length} funcionário(s) marcado(s) como presentes.`);
+  });
+
+  els.searchInput.addEventListener('input',renderEmployees);
+  els.statusFilter.addEventListener('change',renderEmployees);
+  els.functionFilter.addEventListener('change',renderEmployees);
+
+  document.addEventListener('click',e=>{
+    const close=e.target.closest('[data-close]'); if(close){const d=document.getElementById(close.dataset.close); if(d?.open)d.close();}
+  });
+
+  document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{
+    const r=d.getBoundingClientRect();
+    if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();
+  }));
+
+  const date = new Date();
+  els.todayLabel.textContent = date.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).replace(/^./,m=>m.toUpperCase());
+  renderAll();
+})();
+</script>
+
+<script>
+/* ===== Navegação entre módulos ===== */
+(() => {
+  const tabs=[...document.querySelectorAll('[data-module-target]')];
+  const views=[...document.querySelectorAll('.module-view')];
+  function showModule(id){
+    views.forEach(v=>v.classList.toggle('active',v.id===id));
+    tabs.forEach(t=>t.classList.toggle('active',t.dataset.moduleTarget===id));
+    try{localStorage.setItem('shippingAzulActiveModule',id);}catch{}
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>showModule(t.dataset.moduleTarget)));
+  const saved=localStorage.getItem('shippingAzulActiveModule');
+  if(saved && document.getElementById(saved)) showModule(saved);
+})();
+
+/* ===== Controle de Carregamento ===== */
+(() => {
+  'use strict';
+  const TABLE='carregamentos';
+  const sb=window.sbClient;
+  let dados=[];
+  const $=id=>document.getElementById(id);
+  const v=id=>$(id).value;
+  const uid=()=> (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36)+Math.random().toString(36).slice(2));
+  const localISODate=()=>{const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;};
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const orNull=x=>(x===''||x===undefined)?null:x;
+
+  function rowToObj(r){
+    return {id:r.id,data:r.data||'',lt:r.lt||'',destino:r.destino||'',motorista:r.motorista||'',placa:r.placa||'',veiculo:r.veiculo||'',doca:r.doca||'',chegada:r.chegada||'',aceite:r.aceite||'',docaHora:r.doca_hora||'',cargaPronta:r.carga_pronta||'',inicio:r.inicio||'',fim:r.fim||'',liberacao:r.liberacao||'',meta:r.meta||60,aceitePor:r.aceite_por||'',liberadoPor:r.liberado_por||'',equipe:r.equipe||'',comp:Array.isArray(r.comp)?r.comp:[],pacotes:r.pacotes||0,peso:r.peso||0,status:r.status||'Aguardando',motivo:r.motivo||'',obs:r.obs||'',criado:r.criado||new Date().toISOString()};
+  }
+  function objToRow(o){
+    return {id:o.id,data:orNull(o.data),lt:o.lt,destino:o.destino,motorista:o.motorista,placa:orNull(o.placa),veiculo:orNull(o.veiculo),doca:orNull(o.doca),chegada:orNull(o.chegada),aceite:orNull(o.aceite),doca_hora:orNull(o.docaHora),carga_pronta:orNull(o.cargaPronta),inicio:orNull(o.inicio),fim:orNull(o.fim),liberacao:orNull(o.liberacao),meta:o.meta||60,aceite_por:orNull(o.aceitePor),liberado_por:orNull(o.liberadoPor),equipe:orNull(o.equipe),comp:o.comp||[],pacotes:o.pacotes||0,peso:o.peso||0,status:o.status,motivo:orNull(o.motivo),obs:orNull(o.obs),criado:o.criado};
+  }
+
+  async function reload(){
+    const {data,error}=await sb.from(TABLE).select('*');
+    if(error){console.error(error);alert('Erro ao carregar carregamentos do Supabase: '+error.message);return;}
+    dados=(data||[]).map(rowToObj);
+    render();
+  }
+
+  function minutes(a,b){if(!a||!b)return null;const n=(new Date(b)-new Date(a))/60000;return n>=0?n:null;}
+  function fmtMin(n){if(n==null)return '—';n=Math.round(n);return n>=60?Math.floor(n/60)+'h '+(n%60)+'min':n+' min';}
+  function totalVol(x){return (x.comp||[]).reduce((s,c)=>s+(+c.qtd||0),0);}
+  function fmtDateTime(s){if(!s)return '—';const d=new Date(s);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}
+
+  function addComp(tipo='',qtd=0){
+    const div=document.createElement('div');div.className='lc-composition-row';
+    div.innerHTML=`<div><label>Tipo de volume</label><input class="lc-ctipo" value="${esc(tipo)}" placeholder="Ex.: Saca, Gaylote, Caixa"></div><div><label>Qtd.</label><input class="lc-cqt" type="number" min="0" value="${+qtd||0}"></div><div class="lc-pct">0%</div><button type="button" class="lc-remove" title="Remover">×</button>`;
+    div.querySelector('.lc-cqt').addEventListener('input',calcComp);
+    div.querySelector('.lc-remove').addEventListener('click',()=>{div.remove();calcComp();});
+    $('lc-comp').appendChild(div);calcComp();
+  }
+  function calcComp(){
+    const rows=[...document.querySelectorAll('#lc-comp .lc-composition-row')];
+    const total=rows.reduce((s,r)=>s+(+r.querySelector('.lc-cqt').value||0),0);
+    rows.forEach(r=>r.querySelector('.lc-pct').textContent=(total?(100*(+r.querySelector('.lc-cqt').value||0)/total):0).toFixed(1)+'%');
+    $('lc-totVol').textContent=total;$('lc-totPac').textContent=(+$('lc-pacotes').value||0).toLocaleString('pt-BR');
+  }
+  function getComp(){return [...document.querySelectorAll('#lc-comp .lc-composition-row')].map(r=>({tipo:r.querySelector('.lc-ctipo').value.trim(),qtd:+r.querySelector('.lc-cqt').value||0})).filter(x=>x.tipo||x.qtd);}
+
+  function novo(){
+    $('lc-editId').value='';$('lc-formTitle').textContent='Novo carregamento';
+    ['lc-lt','lc-destino','lc-motorista','lc-placa','lc-doca','lc-aceitePor','lc-liberadoPor','lc-equipe','lc-obs'].forEach(id=>$(id).value='');
+    $('lc-data').value=localISODate();$('lc-veiculo').value='';$('lc-status').value='Aguardando';$('lc-motivo').value='';
+    ['lc-chegada','lc-aceite','lc-docaHora','lc-cargaPronta','lc-inicio','lc-fim','lc-liberacao'].forEach(id=>$(id).value='');
+    $('lc-meta').value=60;$('lc-pacotes').value=0;$('lc-peso').value=0;$('lc-comp').innerHTML='';addComp('Gaylote');addComp('Saca');calcComp();
+    $('lc-formPanel').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function fillTeamFromPlan(){
+    try{
+      const p=JSON.parse(localStorage.getItem('shippingAzulPlanner_v1')||'{}');
+      const people=[];
+      (p.employees||[]).forEach(e=>{if(e.status==='presente'&&e.function&&e.name)people.push(e.name);});
+      (p.synergy||[]).forEach(e=>{if(e.function&&e.name)people.push(e.name);});
+      const unique=[...new Set(people)];
+      if(!unique.length){alert('Não há pessoas alocadas no Plano do Dia. Marque funcionários como presentes e escolha as funções primeiro.');return;}
+      $('lc-equipe').value=unique.join(', ');
+    }catch{alert('Não foi possível ler o Plano do Dia.');}
+  }
+
+  async function salvar(){
+    const req=[['lc-lt','LT / Pedido'],['lc-destino','Destino'],['lc-motorista','Motorista']];
+    for(const [id,n] of req){if(!$(id).value.trim()){alert('Preencha: '+n);$(id).focus();return;}}
+    const id=$('lc-editId').value||uid();const old=dados.find(x=>x.id===id);
+    const obj={id,data:v('lc-data'),lt:v('lc-lt').trim(),destino:v('lc-destino').trim(),motorista:v('lc-motorista').trim(),placa:v('lc-placa').trim(),veiculo:v('lc-veiculo'),doca:v('lc-doca').trim(),chegada:v('lc-chegada'),aceite:v('lc-aceite'),docaHora:v('lc-docaHora'),cargaPronta:v('lc-cargaPronta'),inicio:v('lc-inicio'),fim:v('lc-fim'),liberacao:v('lc-liberacao'),meta:+v('lc-meta')||60,aceitePor:v('lc-aceitePor').trim(),liberadoPor:v('lc-liberadoPor').trim(),equipe:v('lc-equipe').trim(),comp:getComp(),pacotes:+v('lc-pacotes')||0,peso:+v('lc-peso')||0,status:v('lc-status'),motivo:v('lc-motivo'),obs:v('lc-obs').trim(),criado:old?.criado||new Date().toISOString()};
+    $('lc-save').disabled=true;
+    const {error}=await sb.from(TABLE).upsert(objToRow(obj));
+    $('lc-save').disabled=false;
+    if(error){alert('Erro ao salvar no Supabase: '+error.message);return;}
+    await reload();novo();alert('Carregamento salvo com sucesso.');
+  }
+
+  function updateMetrics(){
+    const d=localISODate(),arr=dados.filter(x=>x.data===d),fins=arr.filter(x=>x.status==='Finalizado');
+    $('lc-mTotal').textContent=arr.length;$('lc-mOp').textContent=arr.filter(x=>x.status==='Aguardando'||x.status==='Carregando').length;$('lc-mFin').textContent=fins.length;$('lc-mPac').textContent=arr.reduce((s,x)=>s+(x.pacotes||0),0).toLocaleString('pt-BR');
+    const cargas=fins.map(x=>minutes(x.inicio,x.fim)).filter(x=>x!=null),totais=arr.map(x=>minutes(x.chegada,x.liberacao)).filter(x=>x!=null);
+    $('lc-mAvg').textContent=cargas.length?fmtMin(cargas.reduce((a,b)=>a+b,0)/cargas.length):'—';$('lc-mTotalAvg').textContent=totais.length?fmtMin(totais.reduce((a,b)=>a+b,0)/totais.length):'—';
+  }
+
+  function render(){
+    const q=v('lc-busca').toLowerCase(),fd=v('lc-fData'),fs=v('lc-fStatus'),dest=v('lc-fDestino').toLowerCase();
+    const arr=dados.filter(x=>(!q||[x.lt,x.placa,x.motorista,x.destino].join(' ').toLowerCase().includes(q))&&(!fd||x.data===fd)&&(!fs||x.status===fs)&&(!dest||(x.destino||'').toLowerCase().includes(dest))).sort((a,b)=>((b.data||'')+(b.chegada||'')).localeCompare((a.data||'')+(a.chegada||'')));
+    const tb=$('lc-tbody');tb.innerHTML='';$('lc-empty').style.display=arr.length?'none':'block';$('lc-history-count').textContent=`${arr.length} registro${arr.length===1?'':'s'}`;
+    arr.forEach(x=>{const tr=document.createElement('tr'),cls='lc-'+(x.status||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');tr.innerHTML=`<td><b>${esc(x.lt)}</b></td><td>${esc(x.destino)}</td><td>${esc(x.motorista)}</td><td>${esc(x.placa||'—')}</td><td>${esc(x.doca||'—')}</td><td><span class="lc-badge ${cls}">${esc(x.status)}</span></td><td>${fmtDateTime(x.chegada)}</td><td>${fmtDateTime(x.inicio)}</td><td>${fmtDateTime(x.fim)}</td><td>${fmtDateTime(x.liberacao)}</td><td>${fmtMin(minutes(x.inicio,x.fim))}</td><td>${fmtMin(minutes(x.chegada,x.liberacao))}</td><td>${totalVol(x)}</td><td>${(x.pacotes||0).toLocaleString('pt-BR')}</td><td><button class="lc-smallbtn edit" data-lc-edit="${x.id}">Editar</button> <button class="lc-smallbtn del" data-lc-del="${x.id}">Excluir</button></td>`;tb.appendChild(tr);});
+    updateMetrics();
+  }
+
+  function editar(id){
+    const x=dados.find(a=>a.id===id);if(!x)return;$('lc-editId').value=id;$('lc-formTitle').textContent='Editar carregamento — '+x.lt;
+    const map={data:'lc-data',lt:'lc-lt',destino:'lc-destino',motorista:'lc-motorista',placa:'lc-placa',veiculo:'lc-veiculo',doca:'lc-doca',chegada:'lc-chegada',aceite:'lc-aceite',docaHora:'lc-docaHora',cargaPronta:'lc-cargaPronta',inicio:'lc-inicio',fim:'lc-fim',liberacao:'lc-liberacao',meta:'lc-meta',aceitePor:'lc-aceitePor',liberadoPor:'lc-liberadoPor',equipe:'lc-equipe',pacotes:'lc-pacotes',peso:'lc-peso',status:'lc-status',motivo:'lc-motivo',obs:'lc-obs'};
+    Object.entries(map).forEach(([k,id2])=>$(id2).value=x[k]??'');$('lc-comp').innerHTML='';(x.comp||[]).forEach(c=>addComp(c.tipo,c.qtd));if(!(x.comp||[]).length){addComp('Gaylote');addComp('Saca');}calcComp();$('lc-formPanel').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  async function excluir(id){
+    const x=dados.find(a=>a.id===id);if(!x)return;
+    if(!confirm(`Excluir o carregamento ${x.lt}? Esta ação não pode ser desfeita.`))return;
+    const {error}=await sb.from(TABLE).delete().eq('id',id);
+    if(error){alert('Erro ao excluir no Supabase: '+error.message);return;}
+    await reload();
+  }
+  function clearFilters(){['lc-busca','lc-fData','lc-fStatus','lc-fDestino'].forEach(id=>$(id).value='');render();}
+
+  function download(content,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);}
+  function exportCSV(){
+    const rows=[['Data','LT','Destino','Motorista','Placa','Veículo','Doca','Status','Chegada','Aceite','Entrada Doca','Carga Pronta','Início','Fim','Liberação','Tempo Carga (min)','Tempo Total (min)','Equipe','Aceite Por','Liberado Por','Volumes','Pacotes','Peso kg','Motivo','Observações','Composição']];
+    dados.forEach(x=>rows.push([x.data,x.lt,x.destino,x.motorista,x.placa,x.veiculo,x.doca,x.status,x.chegada,x.aceite,x.docaHora,x.cargaPronta,x.inicio,x.fim,x.liberacao,minutes(x.inicio,x.fim),minutes(x.chegada,x.liberacao),x.equipe,x.aceitePor,x.liberadoPor,totalVol(x),x.pacotes,x.peso,x.motivo,x.obs,(x.comp||[]).map(c=>`${c.tipo}: ${c.qtd}`).join(' | ')]));
+    const csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');download(csv,'controle_carregamento.csv','text/csv;charset=utf-8;');
+  }
+  function backup(){download(JSON.stringify(dados,null,2),'backup_carregamentos.json','application/json');}
+  function restoreFile(file){
+    if(!file)return;const r=new FileReader();
+    r.onload=async()=>{
+      try{
+        const d=JSON.parse(r.result);if(!Array.isArray(d))throw new Error();
+        if(!confirm(`Restaurar backup com ${d.length} carregamento(s)? Isso vai gravar esses registros no Supabase (registros com o mesmo ID serão sobrescritos).`))return;
+        const rows=d.map(x=>objToRow({...x,id:x.id||uid()}));
+        const {error}=await sb.from(TABLE).upsert(rows);
+        if(error){alert('Erro ao restaurar backup no Supabase: '+error.message);return;}
+        await reload();alert('Backup restaurado.');
+      }catch{alert('Arquivo de backup inválido.');}
+    };
+    r.readAsText(file);
+  }
+
+  $('lc-new-top').addEventListener('click',novo);$('lc-clear').addEventListener('click',novo);$('lc-save').addEventListener('click',salvar);$('lc-add-comp').addEventListener('click',()=>addComp());$('lc-pacotes').addEventListener('input',calcComp);$('lc-fill-team').addEventListener('click',fillTeamFromPlan);$('lc-export').addEventListener('click',exportCSV);$('lc-backup').addEventListener('click',backup);$('lc-restore').addEventListener('change',e=>{restoreFile(e.target.files[0]);e.target.value='';});$('lc-clear-filters').addEventListener('click',clearFilters);
+  ['lc-busca','lc-fDestino'].forEach(id=>$(id).addEventListener('input',render));['lc-fData','lc-fStatus'].forEach(id=>$(id).addEventListener('change',render));
+  $('lc-tbody').addEventListener('click',e=>{const ed=e.target.closest('[data-lc-edit]'),del=e.target.closest('[data-lc-del]');if(ed)editar(ed.dataset.lcEdit);if(del)excluir(del.dataset.lcDel);});
+  document.querySelector('[data-module-target="loadingModule"]')?.addEventListener('click',()=>reload());
+  novo();reload();
+})();
+</script>
+
+
+
+<script>
+/* ===== Histórico Diário ===== */
+(() => {
+  'use strict';
+  // O Plano do Dia (Plano de Equipe) continua em localStorage — módulo fora deste escopo.
+  const PLAN_KEY='shippingAzulPlanner_v1';
+  // Estes dois agora vêm do Supabase (fonte única), não mais de localStorage.
+  const HIST_TABLE='historico_diario', LOAD_TABLE='carregamentos', PROD_TABLE='produtividade_registros';
+  const sb=window.sbClient;
+  const $=id=>document.getElementById(id);
+  const localDate=()=>{const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;};
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const fmtDate=s=>{if(!s)return '—';const [y,m,d]=s.split('-');return `${d}/${m}/${y}`;};
+  const fmtSaved=s=>s?new Date(s).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+  const readJSON=(key,fallback)=>{try{const x=JSON.parse(localStorage.getItem(key)||'');return x??fallback;}catch{return fallback;}};
+
+  let history=[];
+  let selectedDate='';
+
+  function rowToSnap(r){
+    return {date:r.date,savedAt:r.saved_at,employees:Array.isArray(r.employees)?r.employees:[],synergy:Array.isArray(r.synergy)?r.synergy:[],functions:Array.isArray(r.functions)?r.functions:[],planning:r.planning||{},real:r.real||{}};
+  }
+  function snapToRow(snap){
+    return {date:snap.date,saved_at:snap.savedAt,employees:snap.employees,synergy:snap.synergy,functions:snap.functions,planning:snap.planning,real:snap.real};
+  }
+
+  async function reload(){
+    const {data,error}=await sb.from(HIST_TABLE).select('*');
+    if(error){console.error(error);alert('Erro ao carregar histórico do Supabase: '+error.message);return;}
+    history=(data||[]).map(rowToSnap);
+  }
+
+  // Busca de uma vez só os "extras ao vivo" (carregamentos e produtividade) de TODAS as
+  // datas, para não disparar 1 consulta por dia exibido na lista.
+  async function liveExtrasAll(){
+    const [loadsRes,prodRes]=await Promise.all([
+      sb.from(LOAD_TABLE).select('data,pacotes'),
+      sb.from(PROD_TABLE).select('date,bipes,sector,person_name')
+    ]);
+    if(loadsRes.error)console.error(loadsRes.error);
+    if(prodRes.error)console.error(prodRes.error);
+    const loadsByDate={},prodByDate={};
+    (loadsRes.data||[]).forEach(r=>{const d=r.data;if(!d)return;if(!loadsByDate[d])loadsByDate[d]={loads:0,packages:0};loadsByDate[d].loads++;loadsByDate[d].packages+=(+r.pacotes||0);});
+    (prodRes.data||[]).forEach(r=>{if(!['Leve','Volumoso'].includes(r.sector)||!r.date)return;if(!prodByDate[r.date])prodByDate[r.date]={bipes:0,people:new Set()};prodByDate[r.date].bipes+=(+r.bipes||0);prodByDate[r.date].people.add(r.person_name);});
+    return {loadsByDate,prodByDate};
+  }
+  function liveExtrasFor(date,cache){
+    const l=cache.loadsByDate[date]||{loads:0,packages:0};
+    const p=cache.prodByDate[date]||{bipes:0,people:new Set()};
+    return {loads:l.loads,packages:l.packages,bipes:p.bipes,prodPeople:p.people.size};
+  }
+
+  function makeSnapshot(date=localDate()){
+    const p=readJSON(PLAN_KEY,null);if(!p||!Array.isArray(p.employees))return null;
+    const employees=p.employees.map(e=>({id:e.id,name:e.name||'',so:e.so||'',ops:e.ops||'',status:e.status||'',function:e.function||''}));
+    const synergy=(p.synergy||[]).map(s=>({id:s.id,name:s.name||'',so:s.so||'',ops:s.ops||'',origin:s.origin||'',function:s.function||''}));
+    const functions=[...(p.functions||[])],planning={...(p.planning||{})};
+    const real=Object.fromEntries(functions.map(fn=>[fn,0]));
+    employees.forEach(e=>{if(e.status==='presente'&&e.function&&real[e.function]!==undefined)real[e.function]++;});
+    synergy.forEach(s=>{if(s.function&&real[s.function]!==undefined)real[s.function]++;});
+    return {date,savedAt:new Date().toISOString(),employees,synergy,functions,planning,real};
+  }
+
+  function hasMeaningfulDay(snap){return !!snap&&(snap.employees.some(e=>e.status||e.function)||snap.synergy.length>0);}
+  async function saveToday(force=true){
+    const snap=makeSnapshot();if(!snap)return false;
+    if(!force&&!hasMeaningfulDay(snap))return false;
+    const existed=history.some(x=>x.date===snap.date);
+    const {error}=await sb.from(HIST_TABLE).upsert(snapToRow(snap));
+    if(error){alert('Erro ao salvar histórico no Supabase: '+error.message);return false;}
+    await reload();
+    selectedDate=snap.date;render();
+    const plannerToast=document.getElementById('toast');if(force&&plannerToast){plannerToast.textContent=existed?'Histórico de hoje atualizado.':'Dia salvo no histórico.';plannerToast.classList.add('show');setTimeout(()=>plannerToast.classList.remove('show'),1900);}
+    return true;
+  }
+  window.ShippingHistory={saveToday,render};
+
+  function stats(s){
+    const present=s.employees.filter(e=>e.status==='presente').length,absent=s.employees.filter(e=>e.status==='ausente').length,allocated=s.employees.filter(e=>e.status==='presente'&&e.function).length+s.synergy.filter(x=>x.function).length;
+    return {present,absent,synergy:s.synergy.length,allocated};
+  }
+
+  function renderList(cache){
+    const arr=history.slice().sort((a,b)=>b.date.localeCompare(a.date));$('history-count').textContent=arr.length;
+    $('history-list').innerHTML=arr.length?arr.map(s=>{const st=stats(s),x=liveExtrasFor(s.date,cache);return `<button class="history-day ${selectedDate===s.date?'active':''}" data-history-date="${s.date}"><strong>${fmtDate(s.date)}</strong><span>Salvo em ${fmtSaved(s.savedAt)}</span><div class="history-day-grid"><div class="history-day-stat"><b>${st.present}</b>Presentes</div><div class="history-day-stat"><b>${st.synergy}</b>Sinergia</div><div class="history-day-stat"><b>${x.loads}</b>Cargas</div><div class="history-day-stat"><b>${x.bipes.toLocaleString('pt-BR')}</b>Bipes</div></div></button>`;}).join(''):'<div class="empty-inline">Nenhum fechamento salvo ainda.</div>';
+  }
+
+  function renderDetail(cache){
+    const s=history.find(x=>x.date===selectedDate);const zero=['hist-kpi-present','hist-kpi-absent','hist-kpi-synergy','hist-kpi-allocated','hist-kpi-loads','hist-kpi-bipes'];
+    if(!s){zero.forEach(id=>$(id).textContent='—');$('history-detail-title').textContent='DETALHES DO DIA';$('history-saved-at').textContent='—';$('history-details').innerHTML='<div class="empty"><div class="big">🗓</div><strong>Nenhum dia selecionado</strong>Salve o dia atual ou escolha um fechamento ao lado.</div>';return;}
+    const st=stats(s),x=liveExtrasFor(s.date,cache);$('hist-kpi-present').textContent=st.present;$('hist-kpi-absent').textContent=st.absent;$('hist-kpi-synergy').textContent=st.synergy;$('hist-kpi-allocated').textContent=st.allocated;$('hist-kpi-loads').textContent=x.loads;$('hist-kpi-bipes').textContent=x.bipes.toLocaleString('pt-BR');$('history-detail-title').textContent=`DETALHES • ${fmtDate(s.date)}`;$('history-saved-at').textContent=`Salvo ${fmtSaved(s.savedAt)}`;
+    const teamRows=s.employees.filter(e=>e.status||e.function).map(e=>`<tr><td><b>${esc(e.name)}</b><br><span style="color:var(--muted)">${esc(e.so||'—')} · ${esc(e.ops||'—')}</span></td><td><span class="history-status ${e.status||'sem-status'}">${e.status==='presente'?'Presente':e.status==='ausente'?'Ausente':e.status==='sinergia'?'Sinergia':'Sem status'}</span></td><td>${esc(e.function||'—')}</td></tr>`).join('');
+    const planRows=(s.functions||[]).map(fn=>{const pl=+s.planning?.[fn]||0,re=+s.real?.[fn]||0,diff=re-pl;return `<tr><td><b>${esc(fn)}</b></td><td>${pl}</td><td>${re}</td><td style="font-weight:900;color:${diff<0?'var(--red)':diff>0?'var(--amber)':'var(--green)'}">${diff>0?'+':''}${diff}</td></tr>`;}).join('');
+    const synRows=(s.synergy||[]).map(a=>`<tr><td><b>${esc(a.name)}</b></td><td>${esc(a.origin||'—')}</td><td>${esc(a.function||'—')}</td></tr>`).join('');
+    $('history-details').innerHTML=`<div class="history-detail-grid"><div class="history-box"><h3>Equipe do dia</h3><div class="history-box-body"><table class="history-table"><thead><tr><th>Funcionário</th><th>Status</th><th>Função</th></tr></thead><tbody>${teamRows||'<tr><td colspan="3">Sem movimentação registrada.</td></tr>'}</tbody></table></div></div><div class="history-box"><h3>Planejado × Real</h3><div class="history-box-body"><table class="history-table"><thead><tr><th>Função</th><th>Plan.</th><th>Real</th><th>Dif.</th></tr></thead><tbody>${planRows}</tbody></table></div></div><div class="history-box"><h3>Sinergia</h3><div class="history-box-body"><table class="history-table"><thead><tr><th>Nome</th><th>Origem</th><th>Função</th></tr></thead><tbody>${synRows||'<tr><td colspan="3">Nenhuma sinergia.</td></tr>'}</tbody></table></div></div><div class="history-box"><h3>Resumo operacional</h3><div class="history-box-body" style="font-size:11px;line-height:1.8"><b>Carregamentos:</b> ${x.loads}<br><b>Pacotes registrados:</b> ${x.packages.toLocaleString('pt-BR')}<br><b>Bipes lançados:</b> ${x.bipes.toLocaleString('pt-BR')}<br><b>Pessoas com produtividade:</b> ${x.prodPeople}<br><span style="color:var(--muted)">Carregamentos e produtividade são lidos do Supabase pela mesma data.</span></div></div></div>`;
+  }
+  async function render(){
+    const cache=await liveExtrasAll();
+    renderList(cache);
+    renderDetail(cache);
+  }
+  document.querySelector('[data-module-target="historyModule"]')?.addEventListener('click',async()=>{await reload();render();});
+  $('history-list').addEventListener('click',e=>{const b=e.target.closest('[data-history-date]');if(!b)return;selectedDate=b.dataset.historyDate;render();});
+  $('history-save-today').addEventListener('click',()=>saveToday(true));
+  $('history-delete-day').addEventListener('click',async()=>{
+    if(!selectedDate)return alert('Selecione um dia.');
+    if(!confirm(`Excluir o fechamento de ${fmtDate(selectedDate)}? Os carregamentos e lançamentos de produtividade não serão apagados.`))return;
+    const {error}=await sb.from(HIST_TABLE).delete().eq('date',selectedDate);
+    if(error){alert('Erro ao excluir no Supabase: '+error.message);return;}
+    await reload();
+    selectedDate=history.slice().sort((a,b)=>b.date.localeCompare(a.date))[0]?.date||'';
+    render();
+  });
+  (async()=>{await reload();selectedDate=history.slice().sort((a,b)=>b.date.localeCompare(a.date))[0]?.date||'';render();})();
+})();
+</script>
+
+<script>
+/* ===== Produtividade ===== */
+(() => {
+  'use strict';
+  const RECORDS_TABLE='produtividade_registros', GOALS_TABLE='produtividade_metas', PLAN_KEY='shippingAzulPlanner_v1';
+  const sb=window.sbClient;
+  const $=id=>document.getElementById(id);const uid=()=>crypto.randomUUID?crypto.randomUUID():'p-'+Date.now()+'-'+Math.random().toString(16).slice(2);
+  const localDate=()=>{const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;};
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const readPlan=()=>{try{return JSON.parse(localStorage.getItem(PLAN_KEY)||'{}')||{};}catch{return {};}};
+  let data={records:[],goals:{Leve:300,Volumoso:75}};
+  const BIP_SECTORS=['Leve','Volumoso'];
+
+  function rowToRecord(r){
+    return {id:r.id,date:r.date,personKey:r.person_key,personName:r.person_name,sector:r.sector,bipes:r.bipes||0,hours:r.hours??'',note:r.note||'',createdAt:r.created_at,updatedAt:r.updated_at};
+  }
+  function recordToRow(o){
+    return {id:o.id,date:o.date,person_key:o.personKey,person_name:o.personName,sector:o.sector,bipes:o.bipes||0,hours:(o.hours===''||o.hours==null)?null:o.hours,note:o.note||null,created_at:o.createdAt,updated_at:o.updatedAt};
+  }
+
+  async function reload(){
+    const [recRes,goalRes]=await Promise.all([
+      sb.from(RECORDS_TABLE).select('*'),
+      sb.from(GOALS_TABLE).select('*')
+    ]);
+    if(recRes.error){alert('Erro ao carregar produtividade do Supabase: '+recRes.error.message);}
+    if(goalRes.error){alert('Erro ao carregar metas do Supabase: '+goalRes.error.message);}
+    data.records=(recRes.data||[]).map(rowToRecord);
+    const goalsMap={};(goalRes.data||[]).forEach(g=>goalsMap[g.sector]=g.meta);
+    data.goals={Leve:Math.max(0,+goalsMap.Leve||300),Volumoso:Math.max(0,+goalsMap.Volumoso||75)};
+  }
+  function sectors(){return [...BIP_SECTORS];}
+  function syncGoals(){
+    data.goals={Leve:Math.max(0,+data.goals.Leve||300),Volumoso:Math.max(0,+data.goals.Volumoso||75)};
+  }
+  function people(){const p=readPlan(),arr=[];(p.employees||[]).forEach(e=>arr.push({value:'emp:'+e.id,name:e.name,meta:[e.so,e.ops].filter(Boolean).join(' · ')}));(p.synergy||[]).forEach(e=>arr.push({value:'syn:'+e.id,name:e.name,meta:'Sinergia • '+(e.origin||'') }));return arr;}
+  function fmtN(n,dec=0){return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
+  function reference(sector){return Math.max(0,+data.goals[sector]||0);}
+  function indexOf(r){const g=reference(r.sector);return g>0?(+r.bipes||0)/g:null;}
+  function rateOf(r){const h=+r.hours||0;return h>0?(+r.bipes||0)/h:null;}
+  function achievement(r){const rate=rateOf(r),g=reference(r.sector);return rate!=null&&g>0?rate/g*100:null;}
+
+  function renderSelectors(){
+    const ppl=people(),current=$('prod-person').value;$('prod-person').innerHTML='<option value="">Selecione...</option>'+ppl.map(p=>`<option value="${esc(p.value)}">${esc(p.name)}${p.meta?' — '+esc(p.meta):''}</option>`).join('');if(ppl.some(p=>p.value===current))$('prod-person').value=current;
+    const secs=sectors(),curSec=$('prod-sector').value,curFilter=$('prod-sector-filter').value;$('prod-sector').innerHTML='<option value="">Selecione...</option>'+secs.map(s=>`<option>${esc(s)}</option>`).join('');$('prod-sector-filter').innerHTML='<option value="all">Todos os setores</option>'+secs.map(s=>`<option>${esc(s)}</option>`).join('');if(secs.includes(curSec))$('prod-sector').value=curSec;if(secs.includes(curFilter))$('prod-sector-filter').value=curFilter;
+  }
+  function renderGoals(){$('prod-goals').innerHTML=BIP_SECTORS.map(s=>`<div class="goal-row"><strong title="${esc(s)}">${esc(s)}</strong><input type="number" min="0" step="1" value="${reference(s)}" data-goal-sector="${esc(s)}"><span>bipes/h</span></div>`).join('');}
+  function filtered(){const d=$('prod-date-filter').value,sec=$('prod-sector-filter').value;return data.records.filter(r=>BIP_SECTORS.includes(r.sector)&&(!d||r.date===d)&&(sec==='all'||r.sector===sec));}
+  function aggregate(rows){
+    const map=new Map();for(const r of rows){const key=r.personKey||r.personName;let x=map.get(key);if(!x){x={name:r.personName,bipes:0,index:0,indexParts:0,sectors:new Set(),hours:0,hasHours:false};map.set(key,x);}x.bipes+=+r.bipes||0;x.sectors.add(r.sector);const idx=indexOf(r);if(idx!=null){x.index+=idx;x.indexParts++;}if(+r.hours>0){x.hours+=+r.hours;x.hasHours=true;}}
+    return [...map.values()].sort((a,b)=>(b.indexParts?b.index:-1)-(a.indexParts?a.index:-1)||b.bipes-a.bipes);
+  }
+  function renderKpis(rows,rank){
+    $('prod-kpi-bipes').textContent=fmtN(rows.reduce((s,r)=>s+(+r.bipes||0),0));$('prod-kpi-people').textContent=new Set(rows.map(r=>r.personKey||r.personName)).size;$('prod-kpi-records').textContent=rows.length;$('prod-kpi-hours').textContent=rows.filter(r=>+r.hours>0).length;
+    const best=rank.find(x=>x.indexParts);$('prod-kpi-best').textContent=best?best.name.split(/\s+/)[0]:'—';$('prod-kpi-best-sub').textContent=best?`Índice ${fmtN(best.index,2)}× referência`:'sem referência configurada';
+    const sm={};rows.forEach(r=>{const i=indexOf(r);if(i!=null)sm[r.sector]=(sm[r.sector]||0)+i;});const top=Object.entries(sm).sort((a,b)=>b[1]-a[1])[0];$('prod-kpi-sector').textContent=top?top[0]:'—';
+  }
+  function renderRanking(rank){$('prod-rank-count').textContent=`${rank.length} pessoa${rank.length===1?'':'s'}`;$('prod-ranking').innerHTML=rank.length?rank.map((x,i)=>`<div class="rank-card ${i===0?'top1':''}"><div class="rank-pos">${i+1}º</div><div><div class="rank-name">${esc(x.name)}</div><div class="rank-meta">${esc([...x.sectors].join(' • '))}</div></div><div class="rank-num"><b>${fmtN(x.bipes)}</b><span>bipes</span></div><div class="rank-num"><b>${x.indexParts?fmtN(x.index,2)+'×':'—'}</b><span>índice</span></div><div class="rank-num"><b>${x.hasHours?fmtN(x.hours,2):'—'}</b><span>horas inf.</span></div></div>`).join(''):'<div class="empty-inline">Nenhum lançamento nessa data/setor.</div>';}
+  function renderHistory(rows){
+    const arr=rows.slice().sort((a,b)=>(b.date+b.createdAt).localeCompare(a.date+a.createdAt));$('prod-history-count').textContent=`${arr.length} registro${arr.length===1?'':'s'}`;$('prod-history-empty').style.display=arr.length?'none':'block';$('prod-history-body').innerHTML=arr.map(r=>{const idx=indexOf(r),rate=rateOf(r),ach=achievement(r);return `<tr><td>${esc(r.date.split('-').reverse().join('/'))}</td><td><b>${esc(r.personName)}</b></td><td>${esc(r.sector)}</td><td><b>${fmtN(r.bipes)}</b></td><td>${reference(r.sector)?fmtN(reference(r.sector)):'—'}</td><td>${idx!=null?`<span class="score-pill">${fmtN(idx,2)}×</span>`:'—'}</td><td>${+r.hours>0?fmtN(r.hours,2):'—'}</td><td>${rate!=null?fmtN(rate,1):'—'}</td><td>${ach!=null?`<span class="score-pill ${ach>=100?'good':ach>=85?'warn':''}">${fmtN(ach,0)}%</span>`:'—'}</td><td title="${esc(r.note||'')}">${esc((r.note||'').slice(0,42)||'—')}</td><td><button class="btn small" data-prod-edit="${r.id}">Editar</button> <button class="btn small danger" data-prod-del="${r.id}">Excluir</button></td></tr>`;}).join('');
+  }
+  function render(){syncGoals();renderSelectors();renderGoals();const rows=filtered(),rank=aggregate(rows);renderKpis(rows,rank);renderRanking(rank);renderHistory(rows);}
+  function clearForm(){ $('prod-edit-id').value='';$('prod-form-title').textContent='Adicionar produtividade';$('prod-date').value=$('prod-date-filter').value||localDate();$('prod-person').value='';$('prod-sector').value='';$('prod-bipes').value='';$('prod-hours').value='';$('prod-note').value='';}
+  async function saveRecord(){
+    const personVal=$('prod-person').value,sector=$('prod-sector').value,date=$('prod-date').value,bipes=Math.max(0,Math.floor(+$('prod-bipes').value||0)),hours=Math.max(0,+$('prod-hours').value||0);if(!date||!personVal||!sector)return alert('Preencha data, funcionário e setor.');if(!bipes)return alert('Informe a quantidade de bipes.');const p=people().find(x=>x.value===personVal);if(!p)return alert('Funcionário não encontrado no cadastro atual.');const id=$('prod-edit-id').value||uid(),old=data.records.find(x=>x.id===id);const obj={id,date,personKey:personVal,personName:p.name,sector,bipes,hours:hours||'',note:$('prod-note').value.trim(),createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};
+    $('prod-save').disabled=true;
+    const {error}=await sb.from(RECORDS_TABLE).upsert(recordToRow(obj));
+    $('prod-save').disabled=false;
+    if(error){alert('Erro ao salvar produtividade no Supabase: '+error.message);return;}
+    await reload();window.ShippingHistory?.render?.();$('prod-date-filter').value=date;clearForm();render();
+  }
+  function editRecord(id){const r=data.records.find(x=>x.id===id);if(!r)return;$('prod-edit-id').value=id;$('prod-form-title').textContent='Editar produtividade';$('prod-date').value=r.date;renderSelectors();$('prod-person').value=r.personKey;$('prod-sector').value=r.sector;$('prod-bipes').value=r.bipes;$('prod-hours').value=r.hours||'';$('prod-note').value=r.note||'';document.getElementById('productivityModule').scrollIntoView({behavior:'smooth',block:'start'});}
+  function exportCSV(){const rows=[['Data','Funcionário','Setor','Bipes','Referência por hora','Índice relativo','Horas informadas','Bipes por hora','% da meta por hora','Observação']];data.records.forEach(r=>rows.push([r.date,r.personName,r.sector,r.bipes,reference(r.sector),indexOf(r)??'',r.hours||'',rateOf(r)??'',achievement(r)??'',r.note||'']));const csv='\ufeff'+rows.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='produtividade_shipping.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+
+  $('prod-date-filter').value=localDate();$('prod-date').value=localDate();
+  document.querySelector('[data-module-target="productivityModule"]')?.addEventListener('click',()=>setTimeout(async()=>{await reload();render();},0));
+  $('prod-save').addEventListener('click',saveRecord);$('prod-clear-form').addEventListener('click',clearForm);$('prod-date-filter').addEventListener('change',()=>{if(!$('prod-edit-id').value)$('prod-date').value=$('prod-date-filter').value;render();});$('prod-sector-filter').addEventListener('change',render);$('prod-export').addEventListener('click',exportCSV);
+  $('prod-goals').addEventListener('change',async e=>{
+    const sec=e.target.dataset.goalSector;if(!sec)return;
+    const val=Math.max(0,+e.target.value||0);data.goals[sec]=val;
+    const {error}=await sb.from(GOALS_TABLE).upsert({sector:sec,meta:val});
+    if(error)alert('Erro ao salvar meta no Supabase: '+error.message);
+    render();
+  });
+  $('prod-history-body').addEventListener('click',async e=>{
+    const ed=e.target.closest('[data-prod-edit]'),del=e.target.closest('[data-prod-del]');
+    if(ed)editRecord(ed.dataset.prodEdit);
+    if(del&&confirm('Excluir este lançamento de produtividade?')){
+      const {error}=await sb.from(RECORDS_TABLE).delete().eq('id',del.dataset.prodDel);
+      if(error){alert('Erro ao excluir no Supabase: '+error.message);return;}
+      await reload();window.ShippingHistory?.render?.();render();
+    }
+  });
+  (async()=>{await reload();render();clearForm();})();
+})();
+</script>
+
+
+<script>
+/* ===== QR Codes dos Funcionários ===== */
+(() => {
+  'use strict';
+  const PLAN_KEY='shippingAzulPlanner_v1';
+  const $=id=>document.getElementById(id);
+  let mode='so';
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const initials=name=>String(name||'').trim().split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+  function readEmployees(){
+    try{const x=JSON.parse(localStorage.getItem(PLAN_KEY)||'{}');return Array.isArray(x.employees)?x.employees:[];}catch{return [];}
+  }
+
+  /* Gerador QR compacto, offline, para os códigos curtos de S0/OPS (QR Model 2, versão 1-L). */
+  function qrMatrix(text){
+    const bytes=Array.from(new TextEncoder().encode(String(text)));
+    if(bytes.length>17) throw new Error('Código com mais de 17 bytes');
+    const bits=[];
+    const pushBits=(value,length)=>{for(let i=length-1;i>=0;i--)bits.push((value>>>i)&1);};
+    pushBits(0b0100,4); // byte mode
+    pushBits(bytes.length,8);
+    bytes.forEach(b=>pushBits(b,8));
+    for(let i=0;i<Math.min(4,152-bits.length);i++)bits.push(0);
+    while(bits.length%8)bits.push(0);
+    const data=[];
+    for(let i=0;i<bits.length;i+=8){let b=0;for(let j=0;j<8;j++)b=(b<<1)|(bits[i+j]||0);data.push(b);}
+    let pad=0;while(data.length<19)data.push(pad++%2===0?0xEC:0x11);
+
+    const exp=new Array(512),log=new Array(256);let x=1;
+    for(let i=0;i<255;i++){exp[i]=x;log[x]=i;x<<=1;if(x&0x100)x^=0x11d;}
+    for(let i=255;i<512;i++)exp[i]=exp[i-255];
+    const mul=(a,b)=>a&&b?exp[log[a]+log[b]]:0;
+    let gen=[1];
+    for(let i=0;i<7;i++){
+      const next=new Array(gen.length+1).fill(0);
+      for(let j=0;j<gen.length;j++){next[j]^=gen[j];next[j+1]^=mul(gen[j],exp[i]);}
+      gen=next;
+    }
+    const work=data.concat(new Array(7).fill(0));
+    for(let i=0;i<data.length;i++){
+      const coef=work[i];if(!coef)continue;
+      for(let j=0;j<gen.length;j++)work[i+j]^=mul(gen[j],coef);
+    }
+    const codewords=data.concat(work.slice(data.length));
+
+    const n=21,m=Array.from({length:n},()=>Array(n).fill(null));
+    function finder(row,col){
+      for(let r=-1;r<=7;r++)for(let c=-1;c<=7;c++){
+        if(row+r<0||row+r>=n||col+c<0||col+c>=n)continue;
+        m[row+r][col+c]=(r>=0&&r<=6&&c>=0&&c<=6&&(r===0||r===6||c===0||c===6||(r>=2&&r<=4&&c>=2&&c<=4)));
+      }
+    }
+    finder(0,0);finder(n-7,0);finder(0,n-7);
+    for(let r=8;r<n-8;r++)if(m[r][6]===null)m[r][6]=(r%2===0);
+    for(let c=8;c<n-8;c++)if(m[6][c]===null)m[6][c]=(c%2===0);
+
+    const G15=0x0537,FORMAT_MASK=0x5412;
+    const digit=v=>{let d=0;while(v){d++;v>>>=1;}return d;};
+    let formatData=(1<<3); // ECC L + mask 0
+    let rem=formatData<<10;
+    while(digit(rem)-digit(G15)>=0)rem^=G15<<(digit(rem)-digit(G15));
+    const fmt=((formatData<<10)|rem)^FORMAT_MASK;
+    for(let i=0;i<15;i++){
+      const dark=((fmt>>i)&1)!==0;
+      if(i<6)m[i][8]=dark;else if(i<8)m[i+1][8]=dark;else m[n-15+i][8]=dark;
+      if(i<8)m[8][n-i-1]=dark;else if(i<9)m[8][15-i]=dark;else m[8][15-i-1]=dark;
+    }
+    m[n-8][8]=true;
+
+    let inc=-1,row=n-1,bitIndex=7,byteIndex=0;
+    for(let col=n-1;col>0;col-=2){
+      if(col===6)col--;
+      while(true){
+        for(let c=0;c<2;c++){
+          const cc=col-c;
+          if(m[row][cc]===null){
+            let dark=byteIndex<codewords.length&&((codewords[byteIndex]>>>bitIndex)&1)!==0;
+            if((row+cc)%2===0)dark=!dark; // mask 0
+            m[row][cc]=dark;
+            bitIndex--;if(bitIndex<0){byteIndex++;bitIndex=7;}
+          }
+        }
+        row+=inc;
+        if(row<0||row>=n){row-=inc;inc=-inc;break;}
+      }
+    }
+    return m;
+  }
+
+  function drawQR(canvas,value){
+    const matrix=qrMatrix(value),quiet=4,moduleSize=6,size=(matrix.length+quiet*2)*moduleSize;
+    canvas.width=size;canvas.height=size;
+    const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);ctx.fillStyle='#000';
+    for(let r=0;r<matrix.length;r++)for(let c=0;c<matrix.length;c++)if(matrix[r][c])ctx.fillRect((c+quiet)*moduleSize,(r+quiet)*moduleSize,moduleSize,moduleSize);
+  }
+
+  function updateModeButtons(){
+    document.querySelectorAll('[data-qr-mode]').forEach(b=>b.classList.toggle('active',b.dataset.qrMode===mode));
+  }
+  function copyText(value){
+    if(navigator.clipboard?.writeText){navigator.clipboard.writeText(value).catch(()=>fallback());return;}
+    fallback();
+    function fallback(){const ta=document.createElement('textarea');ta.value=value;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch{}ta.remove();}
+  }
+  function render(){
+    const employees=readEmployees();
+    const q=String($('qr-search')?.value||'').trim().toLowerCase();
+    const field=mode==='so'?'so':'ops',label=mode==='so'?'S0':'OPS';
+    const withCode=employees.filter(e=>String(e[field]||'').trim()).length;
+    $('qr-kpi-total').textContent=employees.length;$('qr-kpi-with').textContent=withCode;$('qr-kpi-missing').textContent=employees.length-withCode;
+    $('qr-kpi-with-label').textContent=`Com ${label}`;$('qr-kpi-missing-label').textContent=`Sem ${label}`;
+    const rows=employees.filter(e=>!q||`${e.name||''} ${e.so||''} ${e.ops||''}`.toLowerCase().includes(q));
+    $('qr-header-count').textContent=`${rows.length} funcionário${rows.length===1?'':'s'}`;
+    updateModeButtons();
+    if(!rows.length){$('qr-grid').innerHTML='<div class="qr-empty"><b>Nenhum funcionário encontrado.</b><br>Ajuste a pesquisa.</div>';return;}
+    $('qr-grid').innerHTML=rows.map(e=>{
+      const value=String(e[field]||'').trim();
+      return `<article class="qr-card"><div class="qr-card-head"><div class="qr-person"><div class="avatar">${esc(initials(e.name))}</div><div class="qr-person-text"><div class="qr-person-name" title="${esc(e.name)}">${esc(e.name)}</div><div class="qr-person-meta">${esc(e.so||'Sem S0')} · ${esc(e.ops||'Sem OPS')}</div></div></div><span class="qr-kind">${label}</span></div><div class="qr-code-box">${value?`<canvas data-qr="${esc(value)}" aria-label="QR ${label} de ${esc(e.name)}"></canvas>`:`<div class="qr-missing"><div><b>${label} não cadastrado</b><br>Edite o funcionário na aba Plano de Equipe.</div></div>`}</div><div class="qr-value-row"><div class="qr-value" title="${esc(value||`${label} não cadastrado`)}">${esc(value||`${label} não cadastrado`)}</div><button class="qr-copy" type="button" data-copy-qr="${esc(value)}" ${value?'':'disabled'}>Copiar</button></div></article>`;
+    }).join('');
+    document.querySelectorAll('#qr-grid canvas[data-qr]').forEach(canvas=>{try{drawQR(canvas,canvas.dataset.qr);}catch(err){canvas.replaceWith(Object.assign(document.createElement('div'),{className:'qr-missing',innerHTML:'<div><b>Não foi possível gerar o QR</b><br>Código longo demais.</div>'}));}});
+  }
+
+  document.querySelector('[data-module-target="qrModule"]')?.addEventListener('click',()=>setTimeout(render,0));
+  $('qr-search')?.addEventListener('input',render);
+  document.querySelectorAll('[data-qr-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.qrMode;render();}));
+  $('qr-grid')?.addEventListener('click',e=>{const b=e.target.closest('[data-copy-qr]');if(b?.dataset.copyQr)copyText(b.dataset.copyQr);});
+  window.addEventListener('storage',e=>{if(e.key===PLAN_KEY)render();});
+  render();
+})();
+</script>
+
+</body>
+</html>
