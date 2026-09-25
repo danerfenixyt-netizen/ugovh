@@ -1534,6 +1534,118 @@
   render();
 })();
 </script>
+<!-- Integração com o Firebase Realtime Database para Sincronização PC 1 e PC 2 -->
+<script type="module">
+  // 1. Importa os módulos oficiais do Firebase via CDN (Web)
+  import { initializeApp } from "https://gstatic.com";
+  import { getDatabase, ref, set, push, onValue, off } from "https://gstatic.com";
+
+  // 2. Suas credenciais oficiais extraídas do print
+  const firebaseConfig = {
+    apiKey: "AIzaSyAgioiEJo0HxgbbNno7dBLDHhMEvVgluXM",
+    authDomain: "://firebaseapp.com",
+    databaseURL: "https://firebaseio.com",
+    projectId: "test-hugo7",
+    storageBucket: "test-hugo7.firebasestorage.app",
+    messagingSenderId: "533887133892",
+    appId: "1:533887133892:web:fcb58feb1b50f74acc8191",
+    measurementId: "G-DHB5MDR2M2"
+  };
+
+  // Inicializa o Firebase e o Banco de Dados em tempo real
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // =========================================================================
+  // MÓDULO 1: SINALIZAÇÃO E ESCUTA DE DADOS EM TEMPO REAL (Para PC 1 e PC 2)
+  // =========================================================================
+
+  // Escuta a lista de CARREGAMENTOS (Sincroniza a tabela na hora)
+  onValue(ref(db, 'shipping_azul/carregamentos'), (snapshot) => {
+    const dados = snapshot.val();
+    const listaCarregamentos = dados ? Object.values(dados) : [];
+    
+    console.log("🚚 Carregamentos atualizados via Firebase:", listaCarregamentos);
+    
+    // SE VOCÊ JÁ TIVER UMA FUNÇÃO NO SEU SITE QUE DESENHA A TABELA DE CARREGAMENTO, 
+    // DESCOMENTE A LINHA ABAIXO E COLOQUE O NOME DELA:
+    // renderizarTabelaCarregamentos(listaCarregamentos);
+  });
+
+  // Escuta a lista de FUNCIONÁRIOS cadastrados permanente
+  onValue(ref(db, 'shipping_azul/funcionarios'), (snapshot) => {
+    const dados = snapshot.val();
+    const listaFuncionarios = dados ? Object.values(dados) : [];
+    
+    console.log("👥 Funcionários atualizados via Firebase:", listaFuncionarios);
+    // renderizarListaFuncionarios(listaFuncionarios);
+  });
+
+  // Escuta o HISTÓRICO DIÁRIO / FECHAMENTOS
+  onValue(ref(db, 'shipping_azul/historico_diario'), (snapshot) => {
+    const dados = snapshot.val();
+    const listaHistorico = dados ? Object.values(dados) : [];
+    
+    console.log("🗓 Histórico diário atualizado via Firebase:", listaHistorico);
+    // renderizarHistoricoDiario(listaHistorico);
+  });
+
+  // =========================================================================
+  // MÓDULO 2: FUNÇÕES GLOBAIS PARA SALVAR DADOS (Substitutos do localStorage)
+  // =========================================================================
+
+  /**
+   * Salva ou atualiza um Carregamento no Firebase
+   * @param {Object} dadosCarga - Objeto contendo data, pedido, motorista, placa, doca, status, etc.
+   */
+  window.dbSalvarCarregamento = function(dadosCarga) {
+    // Se a carga já tiver um identificador (ex: número do pedido ou ID único), usa ele. 
+    // Caso contrário, o Firebase gera um ID automático único usando 'push'.
+    const idCarga = dadosCarga.id || push(ref(db, 'shipping_azul/carregamentos')).key;
+    dadosCarga.id = idCarga; // Garante que o objeto guarde seu próprio ID
+
+    set(ref(db, `shipping_azul/carregamentos/${idCarga}`), dadosCarga)
+      .then(() => console.log("🚚 Carregamento salvo e sincronizado em todos os PCs!"))
+      .catch((erro) => console.error("Erro ao salvar carregamento:", erro));
+  };
+
+  /**
+   * Cadastra ou atualiza um Funcionário permanente
+   * @param {Object} dadosFuncionario - Objeto contendo nome completo, S0, OPS, etc.
+   */
+  window.dbSalvarFuncionario = function(dadosFuncionario) {
+    const idFunc = dadosFuncionario.s0 || push(ref(db, 'shipping_azul/funcionarios')).key;
+    
+    set(ref(db, `shipping_azul/funcionarios/${idFunc}`), dadosFuncionario)
+      .then(() => console.log("👥 Funcionário salvo e sincronizado com sucesso!"))
+      .catch((erro) => console.error("Erro ao salvar funcionário:", erro));
+  };
+
+  /**
+   * Salva o fechamento do dia no Histórico Diário
+   * @param {string} dataFormatada - Chave no formato "AAAA-MM-DD" para organizar os dias
+   * @param {Object} dadosDoDia - Objeto contendo total de presentes, ausentes, bipes lançados, etc.
+   */
+  window.dbSalvarHistoricoDiario = function(dataFormatada, dadosDoDia) {
+    set(ref(db, `shipping_azul/historico_diario/${dataFormatada}`), dadosDoDia)
+      .then(() => console.log("🗓 Fechamento diário salvo e sincronizado!"))
+      .catch((erro) => console.error("Erro ao salvar histórico diário:", erro));
+  };
+
+  /**
+   * Lança uma nova Produtividade (Bipes)
+   * @param {Object} dadosProdutividade - Objeto com funcionário, setor, quantidade de bipes, data, etc.
+   */
+  window.dbSalvarProdutividade = function(dadosProdutividade) {
+    // Como bipes são lançamentos contínuos, usamos o push para gerar uma lista cronológica automática
+    const novaProdRef = push(ref(db, 'shipping_azul/produtividade'));
+    
+    set(novaProdRef, dadosProdutividade)
+      .then(() => console.log("📈 Lançamento de produtividade enviado com sucesso!"))
+      .catch((erro) => console.error("Erro ao salvar produtividade:", erro));
+  };
+
+</script>
 
 </body>
 </html>
